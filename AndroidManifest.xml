@@ -26,7 +26,8 @@
 			android:windowSoftInputMode="stateVisible|adjustPan" />
         <activity android:name=".TransactionTabActivity"
             android:screenOrientation="portrait" android:configChanges="keyboardHidden|orientation" />
-		
+        <activity android:name=".NavExpenseActivity" android:screenOrientation="portrait" android:configChanges="keyboardHidden|orientation" />
+        		
     </application>
 
 </manifest>

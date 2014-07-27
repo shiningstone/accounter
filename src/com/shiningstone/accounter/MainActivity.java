@@ -15,6 +15,9 @@ import android.widget.Button;
 import android.widget.TextView;
 
 public class MainActivity extends Activity implements OnClickListener {
+	private final String SHOW_MONTH_DAY = "MM/dd";
+	private final String SHOW_DAY       = "dd";
+	
 	private SmartDate mDate = new SmartDate();
 
 	private Button add_expense_quickly_btn = null;
@@ -30,19 +33,49 @@ public class MainActivity extends Activity implements OnClickListener {
 		ListWeekShow();
 		ListMonthShow();
 
-		add_expense_quickly_btn = (Button) findViewById(R.id.add_expense_quickly_btn);
-		add_expense_quickly_btn.setOnClickListener(this);
+		findViewById(R.id.add_expense_quickly_btn).setOnClickListener(this);
+		findViewById(R.id.today_row_rl).setOnClickListener(this);
+		findViewById(R.id.week_row_rl).setOnClickListener(this);
+		findViewById(R.id.month_row_rl).setOnClickListener(this);
 	}
 	
 	@Override
 	public void onClick(View v) {
-		if (v == add_expense_quickly_btn) {
-			Intent in = new Intent(MainActivity.this, TransactionTabActivity.class);
-			startActivity(in);
-			finish();
+		switch( v.getId() ) {
+			case R.id.add_expense_quickly_btn:
+				StartTransactionTabActivity();
+				break;
+			case R.id.today_row_rl:
+				StartNavExpenseActivity(mDate.CurDate(), mDate.CurDate(), getString(R.string.text_title_today), NavExpenseActivity.MODE_DAY);
+				break;
+			case R.id.week_row_rl:
+				StartNavExpenseActivity(mDate.WeekStart(), mDate.WeekEnd(), getString(R.string.text_title_week), NavExpenseActivity.MODE_WEEK);
+				break;
+			case R.id.month_row_rl:
+				StartNavExpenseActivity(mDate.MonthStart(), mDate.MonthEnd(), getString(R.string.text_title_month), NavExpenseActivity.MODE_MONTH);
+				break;
 		}
 	}
 	
+	private void StartTransactionTabActivity()
+	{
+		Intent in = new Intent(MainActivity.this, TransactionTabActivity.class);
+		startActivity(in);
+		finish();
+	}
+	
+	private void StartNavExpenseActivity(Date start, Date end, String title, int mode)
+	{
+		Intent intent = new Intent(this, NavExpenseActivity.class);
+		
+		intent.putExtra(NavExpenseActivity.START_DATE, start);
+		intent.putExtra(NavExpenseActivity.END_DATE, end);
+		intent.putExtra(NavExpenseActivity.TITLE, title);
+		intent.putExtra(NavExpenseActivity.MODE, mode);
+		
+		startActivity(intent);
+	}
+
 	private void TextShow(int id,String value) {
 		((TextView)findViewById(id)).setText(value);
 	}
@@ -54,13 +87,18 @@ public class MainActivity extends Activity implements OnClickListener {
 	}
 	
 	private void ListWeekShow() {
-		TextShow( R.id.week_datestr_tv, mDate.WeekStart() + "-" + mDate.WeekEnd() );
+		Date Monday = mDate.WeekStart();
+		Date Sunday = mDate.WeekEnd();
+		
+		TextShow( R.id.week_datestr_tv, Transform(Monday,SHOW_MONTH_DAY) + "-" + Transform(Sunday,SHOW_MONTH_DAY) );
 		TextShow( R.id.week_expense_amount_tv, "- ¥ " + 6 );
 		TextShow( R.id.week_income_amount_tv, "¥ " + 7 );
 	}
 	
 	private void ListMonthShow() {
-		TextShow( R.id.month_datestr_tv, mDate.mMonth + "/01" + "-" + mDate.mMonth + "/" + mDate.GetDaySumOfCurMonth() );
+		Date LastDay = mDate.MonthEnd();
+		
+		TextShow( R.id.month_datestr_tv, mDate.mMonth + "/01" + "-" + Transform(LastDay,SHOW_MONTH_DAY) );
 		TextShow( R.id.month_expense_amount_tv, "- ¥ " + 8 );
 		TextShow( R.id.month_income_amount_tv, "¥ " + 9 );
 	}
@@ -72,15 +110,18 @@ public class MainActivity extends Activity implements OnClickListener {
 		TextShow( R.id.budget_balance_amount_tv, "¥ " + 3 );
 	}
 	
+
+	private String Transform(Date date,String format){
+		SimpleDateFormat ymd = new SimpleDateFormat(format);
+		return ymd.format(date); 
+	}
+
 	public class SmartDate {
 		public String mYear;
 		public String mMonth;
 		public String mDay;
 		private Calendar calendar = Calendar.getInstance();
 
-		private final String SHOW_MONTH_DAY = "MM/dd";
-		private final String SHOW_DAY       = "dd";
-		
 		public SmartDate() {
 			mYear  = String.valueOf(calendar.get(Calendar.YEAR));
 			mMonth = String.valueOf(calendar.get(Calendar.MONTH)+1);
@@ -94,32 +135,41 @@ public class MainActivity extends Activity implements OnClickListener {
 			calendar.setFirstDayOfWeek(Calendar.MONDAY);
 		}
 		
-		public String WeekStart() {
+		public Date CurDate() {
 			GregorianCalendar currentDate = new GregorianCalendar(); 
-			currentDate.add( GregorianCalendar.DATE, -GetDaysSinceMonday() ); 
-
-			Date monday = currentDate.getTime(); 
-			return Transform(monday,SHOW_MONTH_DAY);
+			return currentDate.getTime(); 
 		}
 		
-		public String WeekEnd() {
+		public Date WeekStart() {
+			GregorianCalendar currentDate = new GregorianCalendar(); 
+			currentDate.add( GregorianCalendar.DATE, -GetDaysSinceMonday() ); 
+			return currentDate.getTime(); 
+		}
+		
+		public Date WeekEnd() {
 			GregorianCalendar currentDate = new GregorianCalendar(); 
 			currentDate.add( GregorianCalendar.DATE, GetDaysToSunday() ); 
-
-			Date sunday = currentDate.getTime(); 
-			return Transform(sunday,SHOW_MONTH_DAY);
+			return currentDate.getTime(); 
 		}
 
-		public String GetDaySumOfCurMonth() {
+		public Date MonthStart() {
 			Calendar lastDate = Calendar.getInstance(); 
-			
+			lastDate.set(Calendar.DATE,1);
+			return lastDate.getTime(); 
+		}
+
+		public Date MonthEnd() {
+			Calendar lastDate = Calendar.getInstance(); 
 			lastDate.add(Calendar.MONTH,1);
 			lastDate.set(Calendar.DATE,1);
 			lastDate.add(Calendar.DATE,-1);
-			
-			return Transform(lastDate.getTime(),SHOW_DAY); 
+			return lastDate.getTime(); 
 		}
 		
+		public long GetCurrentTime() {
+			return Calendar.getInstance().getTimeInMillis();
+		}
+	
 		private int GetDaysSinceSunday() {
 			return (calendar.get(Calendar.DAY_OF_WEEK) - 1);
 		}
@@ -135,10 +185,5 @@ public class MainActivity extends Activity implements OnClickListener {
 		private int GetDaysToSunday() {
 			return ( GetDaysSinceSunday()%7 );
 		} 
-
-		private String Transform(Date date,String format){
-			SimpleDateFormat ymd = new SimpleDateFormat(format);
-			return ymd.format(date); 
-		}
 	}
 }
