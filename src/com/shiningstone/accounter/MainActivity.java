@@ -31,68 +31,33 @@ public class MainActivity extends Activity implements OnClickListener {
 	public void onClick(View v) {
 	}
 	
+	private void TextShow(int id,String value) {
+		((TextView)findViewById(id)).setText(value);
+	}
+	
 	private void ListDayShow() {
-		TextView today_datestr_tv = (TextView) findViewById(R.id.today_datestr_tv);
-		today_datestr_tv.setText(mDate.mYear + "/" + mDate.mMonth + "/" + mDate.mDay);
-
-		TextView today_expense_amount_tv = (TextView) findViewById(R.id.today_expense_amount_tv);
-		today_expense_amount_tv.setText("- ¥ " + 4);
-
-		TextView today_income_amount_tv = (TextView) findViewById(R.id.today_income_amount_tv);
-		today_income_amount_tv.setText("¥ " + 5);
+		TextShow( R.id.today_datestr_tv, mDate.mYear + "/" + mDate.mMonth + "/" + mDate.mDay );
+		TextShow( R.id.today_expense_amount_tv, "- ¥ " + 4 );
+		TextShow( R.id.today_income_amount_tv, "¥ " + 5 );
 	}
 	
 	private void ListWeekShow() {
-		TextView week_datestr_tv = (TextView) findViewById(R.id.week_datestr_tv);
-		week_datestr_tv.setText(mDate.WeekStart() + "-" + mDate.WeekEnd());
-
-		TextView week_expense_amount_tv = (TextView) findViewById(R.id.week_expense_amount_tv);
-		week_expense_amount_tv.setText("- ¥ " + 6);
-
-		TextView week_income_amount_tv = (TextView) findViewById(R.id.week_income_amount_tv);
-		week_income_amount_tv.setText("¥ " + 7);
+		TextShow( R.id.week_datestr_tv, mDate.WeekStart() + "-" + mDate.WeekEnd() );
+		TextShow( R.id.week_expense_amount_tv, "- ¥ " + 6 );
+		TextShow( R.id.week_income_amount_tv, "¥ " + 7 );
 	}
 	
 	private void ListMonthShow() {
-		TextView month_datestr_tv = (TextView) findViewById(R.id.month_datestr_tv);
-		month_datestr_tv.setText(mDate.mMonth + "/01" + "-" + mDate.mMonth + "/" + mDate.GetDaySumOfCurMonth() );
-
-		TextView month_expense_amount_tv = (TextView) findViewById(R.id.month_expense_amount_tv);
-		month_expense_amount_tv.setText("- ¥ " + 8);
-
-		TextView month_income_amount_tv = (TextView) findViewById(R.id.month_income_amount_tv);
-		month_income_amount_tv.setText("¥ " + 9);
+		TextShow( R.id.month_datestr_tv, mDate.mMonth + "/01" + "-" + mDate.mMonth + "/" + mDate.GetDaySumOfCurMonth() );
+		TextShow( R.id.month_expense_amount_tv, "- ¥ " + 8 );
+		TextShow( R.id.month_income_amount_tv, "¥ " + 9 );
 	}
 
 	private void SummaryShow() {
-		MonthShow();
-		IncomeShow(1);
-		ExpenseShow(2);
-		BudgetShow(3);
-	}
-	
-	private void MonthShow() {
-		String year  = mDate.mYear;
-		String month = mDate.mMonth;
-		String day   = mDate.mDay;
-		
-		TextView month_tv = (TextView) findViewById(R.id.month_tv);
-		month_tv.setText(month);
-	}
-	
-	private void IncomeShow(double value){
-		TextView income_amount_tv = (TextView) findViewById(R.id.income_amount_tv);
-		income_amount_tv.setText("¥ " + value);
-	}
-	
-	private void ExpenseShow(double value) {
-		TextView expense_amount_tv = (TextView) findViewById(R.id.expense_amount_tv);
-		expense_amount_tv.setText("¥ " + value);
-	}
-	
-	private void BudgetShow(double value) {
-		TextView budget_balance_amount_tv = (TextView) findViewById(R.id.budget_balance_amount_tv);
-		budget_balance_amount_tv.setText("¥ " + value);
+		TextShow( R.id.month_tv, mDate.mMonth );
+		TextShow( R.id.income_amount_tv, "¥ " + 1 );
+		TextShow( R.id.expense_amount_tv, "¥ " + 2 );
+		TextShow( R.id.budget_balance_amount_tv, "¥ " + 3 );
 	}
 	
 	public class SmartDate {
@@ -101,8 +66,8 @@ public class MainActivity extends Activity implements OnClickListener {
 		public String mDay;
 		private Calendar calendar = Calendar.getInstance();
 
-		private final int DATE_MOTH_DAY = 1;
-		private final int DATE_DAY = 2;
+		private final String SHOW_MONTH_DAY = "MM/dd";
+		private final String SHOW_DAY       = "dd";
 		
 		public SmartDate() {
 			mYear  = String.valueOf(calendar.get(Calendar.YEAR));
@@ -118,53 +83,49 @@ public class MainActivity extends Activity implements OnClickListener {
 		}
 		
 		public String WeekStart() {
-			int mondayPlus = this.getMondayPlus(); 
 			GregorianCalendar currentDate = new GregorianCalendar(); 
-			currentDate.add(GregorianCalendar.DATE, mondayPlus); 
+			currentDate.add( GregorianCalendar.DATE, -GetDaysSinceMonday() ); 
+
 			Date monday = currentDate.getTime(); 
-		
-			String preMonday = format(monday,0); 
-			return format(monday,DATE_MOTH_DAY);
+			return Transform(monday,SHOW_MONTH_DAY);
 		}
 		
 		public String WeekEnd() {
-			int mondayPlus = this.getMondayPlus(); 
 			GregorianCalendar currentDate = new GregorianCalendar(); 
-			currentDate.add(GregorianCalendar.DATE, mondayPlus+6); 
-			Date monday = currentDate.getTime(); 
-		
-			String preMonday = format(monday,0); 
-			return format(monday,DATE_MOTH_DAY);
+			currentDate.add( GregorianCalendar.DATE, GetDaysToSunday() ); 
+
+			Date sunday = currentDate.getTime(); 
+			return Transform(sunday,SHOW_MONTH_DAY);
 		}
 
 		public String GetDaySumOfCurMonth() {
-			return "31";
+			Calendar lastDate = Calendar.getInstance(); 
+			
+			lastDate.add(Calendar.MONTH,1);
+			lastDate.set(Calendar.DATE,1);
+			lastDate.add(Calendar.DATE,-1);
+			
+			return Transform(lastDate.getTime(),SHOW_DAY); 
 		}
 		
-		private int getMondayPlus() {
-			int dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)-1;
-			if (dayOfWeek == 1) { 
-				return 0; 
-			} else { 
-				return 1 - dayOfWeek; 
-			} 
+		private int GetDaysSinceSunday() {
+			return (calendar.get(Calendar.DAY_OF_WEEK) - 1);
+		}
+		
+		private int GetDaysSinceMonday() {
+			if( GetDaysSinceSunday()==0 ) {
+				return ( 6 );
+			} else {
+				return ( GetDaysSinceSunday() - 1 );
+			}
+		} 
+		
+		private int GetDaysToSunday() {
+			return ( GetDaysSinceSunday()%7 );
 		} 
 
-		private String format(Date date,int id){
-			SimpleDateFormat ymd = null;
-			
-			switch (id) {
-				case DATE_MOTH_DAY:
-					ymd = new SimpleDateFormat("MM/dd");
-					break;
-				case DATE_DAY:
-					ymd = new SimpleDateFormat("dd");
-					break;
-				default:
-					ymd = new SimpleDateFormat("yyyy-MM-dd");
-					break;
-			}
-			
+		private String Transform(Date date,String format){
+			SimpleDateFormat ymd = new SimpleDateFormat(format);
 			return ymd.format(date); 
 		}
 	}
