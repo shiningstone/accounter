@@ -7,13 +7,17 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class MainActivity extends Activity implements OnClickListener {
 	private SmartDate mDate = new SmartDate();
+
+	private Button add_expense_quickly_btn = null;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -25,10 +29,18 @@ public class MainActivity extends Activity implements OnClickListener {
 		ListDayShow();
 		ListWeekShow();
 		ListMonthShow();
+
+		add_expense_quickly_btn = (Button) findViewById(R.id.add_expense_quickly_btn);
+		add_expense_quickly_btn.setOnClickListener(this);
 	}
 	
 	@Override
 	public void onClick(View v) {
+		if (v == add_expense_quickly_btn) {
+			Intent in = new Intent(MainActivity.this, TransactionTabActivity.class);
+			startActivity(in);
+			finish();
+		}
 	}
 	
 	private void TextShow(int id,String value) {

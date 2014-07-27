@@ -30,4 +30,5 @@
     <color name="friend_link_text">#ffff9900</color>
     <color name="list_item_text">#ffff9900</color>
     <color name="setting_meta_lv_item_text">#ffff9900</color>
+    <color name="cost_text">#ffff9900</color>
 </resources>
