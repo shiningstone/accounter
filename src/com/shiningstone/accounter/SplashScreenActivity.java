@@ -11,6 +11,8 @@ public class SplashScreenActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_entrance);
+		
+		onTouchEvent(null);
 	}
 
 	@Override
