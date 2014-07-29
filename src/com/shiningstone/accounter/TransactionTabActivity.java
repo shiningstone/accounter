@@ -33,23 +33,36 @@ public class TransactionTabActivity extends Activity {
 		mMode = intent.getIntExtra("mode", 1);
 		
 		ShowDate();
+		ShowItems();
 		ShowStores();
 		
 	}
 
-	private void ShowStores() {
-		Resources res = this.getResources();
-		String[] stores = res.getStringArray(R.array.TBL_EXPENDITURE_CATEGORY);
-		
+	private void ListviewShow(Spinner target,String[] options) {
 		List<String> list = new ArrayList<String>();
-		for (int i=0;i<stores.length;i++ ) {
-			list.add(stores[i]);
+		for (int i=0;i<options.length;i++ ) {
+			list.add(options[i]);
 		}
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, list);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
-		Spinner corporation_spn = (Spinner) findViewById(R.id.corporation_spn);
-		corporation_spn.setAdapter( adapter );
+		target.setAdapter( adapter );
+	}
+
+	private void ShowItems() {
+		Resources res = this.getResources();
+		String[]  options = res.getStringArray(R.array.TBL_ITEM);
+		Spinner   spinner = (Spinner) findViewById(R.id.project_spn);
+
+		ListviewShow(spinner,options);
+	}
+
+	private void ShowStores() {
+		Resources res = this.getResources();
+		String[]  options = res.getStringArray(R.array.TBL_STORE);
+		Spinner   spinner = (Spinner) findViewById(R.id.corporation_spn);
+		
+		ListviewShow(spinner,options);
 	}
 	
 	private void ShowDate() {
