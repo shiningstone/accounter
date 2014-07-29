@@ -68,8 +68,8 @@
     <string name="input_message">请填写金额</string>
     <string name="edit_message">编辑成功</string>
     <string name="save_message">保存成功</string>
-    <string name="edit_in">编辑收入</string>
-    <string name="edit_out">编辑支出</string>
+    <string name="edit_income">编辑收入</string>
+    <string name="edit_expense">编辑支出</string>
     
     <!-- NavExpenseActivity -->
     <string name="message_error_system">系统错误</string>
