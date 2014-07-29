@@ -33,20 +33,36 @@ public class TransactionTabActivity extends Activity {
 		mMode = intent.getIntExtra("mode", 1);
 		
 		ShowDate();
+		ShowCategories();
+		ShowSubCategories();
+		ShowAccounts();
 		ShowItems();
 		ShowStores();
 		
 	}
 
-	private void ListviewShow(Spinner target,String[] options) {
-		List<String> list = new ArrayList<String>();
-		for (int i=0;i<options.length;i++ ) {
-			list.add(options[i]);
-		}
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, list);
-		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+	private void ShowCategories() {
+		Resources res = this.getResources();
+		String[]  options = res.getStringArray(R.array.TBL_EXPENDITURE_CATEGORY);
+		Spinner   spinner = (Spinner) findViewById(R.id.first_level_category_spn);
 
-		target.setAdapter( adapter );
+		ListviewShow(spinner,options);
+	}
+
+	private void ShowSubCategories() {
+		Resources res = this.getResources();
+		String[]  options = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_1);
+		Spinner   spinner = (Spinner) findViewById(R.id.sub_category_spn);
+
+		ListviewShow(spinner,options);
+	}
+
+	private void ShowAccounts() {
+		Resources res = this.getResources();
+		String[]  options = res.getStringArray(R.array.TBL_ACCOUNT);
+		Spinner   spinner = (Spinner) findViewById(R.id.account_spn);
+
+		ListviewShow(spinner,options);
 	}
 
 	private void ShowItems() {
@@ -70,6 +86,17 @@ public class TransactionTabActivity extends Activity {
 		trade_time_btn.setText(format(calendar.getTime()));
 	}
 	
+	private void ListviewShow(Spinner target,String[] options) {
+		List<String> list = new ArrayList<String>();
+		for (int i=0;i<options.length;i++ ) {
+			list.add(options[i]);
+		}
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, list);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+		target.setAdapter( adapter );
+	}
+
 	private String format(Date date){
 		SimpleDateFormat ymd = new SimpleDateFormat("yyyy-MM-dd");
 		return ymd.format(date); 
