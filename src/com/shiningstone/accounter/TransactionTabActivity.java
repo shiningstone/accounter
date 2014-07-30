@@ -1,6 +1,7 @@
 
 package com.shiningstone.accounter;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -11,11 +12,16 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.FrameLayout;
+import android.widget.RadioButton;
 import android.widget.Spinner;
 
-public class TransactionTabActivity extends Activity {
+public class TransactionTabActivity extends Activity implements OnCheckedChangeListener {
 	final static int INCOME_MODE = 0;
 	final static int PAYOUT_MODE = 1;
 	final static int EDIT_MODE = 2;
@@ -39,8 +45,40 @@ public class TransactionTabActivity extends Activity {
 		ShowItems();
 		ShowStores();
 		
+		RadioButton rb1 = (RadioButton) findViewById(R.id.payout_tab_rb);
+		rb1.setChecked(true);
+		rb1.setOnCheckedChangeListener(this);
 	}
 
+	@Override
+	protected void onActivityResult(int requestCode,int resultCode,Intent data) {
+		if(requestCode==0 && resultCode==Activity.RESULT_OK) {
+			Bundle extras = data.getExtras();
+			String value = extras.getString("value");
+			
+			Button cost_btn = (Button)findViewById(R.id.cost_btn);
+			cost_btn.setText(DecimalFormat.getCurrencyInstance().format(Double.parseDouble(value)));
+		}
+	}
+	
+	@Override
+	public void onCheckedChanged(CompoundButton view, boolean isChecked) {
+		RadioButton rb1 = (RadioButton) findViewById(R.id.payout_tab_rb);
+		FrameLayout corporation_fl = (FrameLayout)findViewById(R.id.corporation_fl);
+		FrameLayout empty_fl = (FrameLayout)findViewById(R.id.empty_fl);
+
+		if(rb1.isChecked()) {
+			corporation_fl.setVisibility(View.VISIBLE);
+			empty_fl.setVisibility(View.GONE);
+		} else {
+			corporation_fl.setVisibility(View.GONE);
+			empty_fl.setVisibility(View.VISIBLE);
+		}
+	}
+	
+	/**********************************************************
+	 * 
+	 **********************************************************/
 	private void ShowCategories() {
 		Resources res = this.getResources();
 		String[]  options = res.getStringArray(R.array.TBL_EXPENDITURE_CATEGORY);
@@ -91,6 +129,7 @@ public class TransactionTabActivity extends Activity {
 		for (int i=0;i<options.length;i++ ) {
 			list.add(options[i]);
 		}
+		
 		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, list);
 		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
