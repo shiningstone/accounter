@@ -9,22 +9,25 @@ import java.util.Date;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.DatePicker;
 import android.widget.FrameLayout;
 import android.widget.RadioButton;
 import android.widget.Spinner;
 
-public class TransactionTabActivity extends Activity implements OnCheckedChangeListener,OnItemSelectedListener {
+public class TransactionTabActivity extends Activity implements OnClickListener,OnCheckedChangeListener,OnItemSelectedListener {
 	final static int INCOME_MODE = 0;
 	final static int PAYOUT_MODE = 1;
 	final static int EDIT_MODE = 2;
@@ -44,13 +47,13 @@ public class TransactionTabActivity extends Activity implements OnCheckedChangeL
 		LoadResources();
 		
 		ShowDate();
-		
 		ExpenseBtn.setChecked(true);
+		UpdateOptions();
+		
 		ExpenseBtn.setOnCheckedChangeListener(this);
-
-		UpdateOptions();		
 		CategorySpn.setOnItemSelectedListener(this);
 		SubCateSpn.setOnItemSelectedListener(this);
+		TradeDateBtn.setOnClickListener(this);
 	}
 
 	@Override
@@ -82,9 +85,37 @@ public class TransactionTabActivity extends Activity implements OnCheckedChangeL
 	public void onNothingSelected(AdapterView<?> parent) {
 	}
 
+	@Override
+	public void onClick(View v) {
+		if( v==CostBtn ) {
+			//Intent i = new Intent(TransactionTabActivity.this,KeyPad.class);
+			//i.putExtra("value", "0");
+			//startActivityForResult(i, 0);
+		}
+		
+		if( v==TradeDateBtn ) {
+			DatePickerDialog datePicker = new DatePickerDialog(this, 
+					mDateSetListenerSatrt,
+					calendar.get(Calendar.YEAR), 
+					calendar.get(Calendar.MONTH), 
+					calendar.get(Calendar.DAY_OF_MONTH));
+			datePicker.show();
+		}
+
+	}
 	/**********************************************************
 	 *    private method
 	 **********************************************************/
+	private DatePickerDialog.OnDateSetListener mDateSetListenerSatrt = new DatePickerDialog.OnDateSetListener() {
+		public void onDateSet(DatePicker view, int year, int month, int day) {
+			calendar.set(Calendar.YEAR, year);
+			calendar.set(Calendar.MONTH, month);
+			calendar.set(Calendar.DAY_OF_MONTH, day);
+			
+			TradeDateBtn.setText( format(calendar.getTime()) );
+		}
+	};
+
 	private void UpdateOptions() {
 		if(ExpenseBtn.isChecked()) {
 			StoreFrm.setVisibility(View.VISIBLE);
@@ -147,6 +178,7 @@ public class TransactionTabActivity extends Activity implements OnCheckedChangeL
 	private String[] OptionsOfStore = null;
 	
 	private Button TradeDateBtn = null;
+	private Button CostBtn = null;
 	private RadioButton ExpenseBtn = null;
 	private FrameLayout StoreFrm = null;
 	private FrameLayout EmptyFrm = null;
