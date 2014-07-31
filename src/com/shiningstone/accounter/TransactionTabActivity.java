@@ -12,6 +12,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -45,10 +46,13 @@ public class TransactionTabActivity extends Activity implements OnCheckedChangeL
 		ShowDate();
 		
 		SpinnerShow( CategorySpn, OptionsOfCategory );
-		SpinnerShow( SubCateSpn, OptionsOfSubCategory);
+		SpinnerShow( SubCateSpn, OptionsOfSubCategory[0]);
 		SpinnerShow( AccountSpn, OptionsOfAccount);
 		SpinnerShow( ItemSpn, OptionsOfItem);
 		SpinnerShow( StoreSpn, OptionsOfStore);
+		
+		CategorySpn.setOnItemSelectedListener(this);
+		SubCateSpn.setOnItemSelectedListener(this);
 		
 		RadioButton rb1 = (RadioButton) findViewById(R.id.payout_tab_rb);
 		rb1.setChecked(true);
@@ -81,6 +85,8 @@ public class TransactionTabActivity extends Activity implements OnCheckedChangeL
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int position, long id){
 		if( view==CategorySpn.getSelectedView() ) {
+			SpinnerShow( SubCateSpn, OptionsOfSubCategory[position]);
+		} else {
 			
 		}
 	}
@@ -117,6 +123,8 @@ public class TransactionTabActivity extends Activity implements OnCheckedChangeL
 	/**********************************************************
 	 *    resources control
 	 **********************************************************/
+	private final int SUB_CATEGORY_NUM = 11;
+	
 	private Spinner CategorySpn = null;
 	private Spinner SubCateSpn = null;
 	private Spinner AccountSpn = null;
@@ -124,7 +132,7 @@ public class TransactionTabActivity extends Activity implements OnCheckedChangeL
 	private Spinner StoreSpn = null;
 	
 	private String[] OptionsOfCategory = null;
-	private String[] OptionsOfSubCategory = null;
+	private String[][] OptionsOfSubCategory = new String[SUB_CATEGORY_NUM][];
 	private String[] OptionsOfAccount = null;
 	private String[] OptionsOfItem = null;
 	private String[] OptionsOfStore = null;
@@ -138,7 +146,17 @@ public class TransactionTabActivity extends Activity implements OnCheckedChangeL
 		Resources res = this.getResources();
 
 		OptionsOfCategory = res.getStringArray(R.array.TBL_EXPENDITURE_CATEGORY);
-		OptionsOfSubCategory = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_1);
+		OptionsOfSubCategory[0] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_1);
+		OptionsOfSubCategory[1] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_2);
+		OptionsOfSubCategory[2] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_3);
+		OptionsOfSubCategory[3] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_4);
+		OptionsOfSubCategory[4] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_5);
+		OptionsOfSubCategory[5] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_6);
+		OptionsOfSubCategory[6] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_7);
+		OptionsOfSubCategory[7] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_8);
+		OptionsOfSubCategory[8] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_9);
+		OptionsOfSubCategory[9] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_10);
+		OptionsOfSubCategory[10] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_11);
 		OptionsOfAccount = res.getStringArray(R.array.TBL_ACCOUNT);;
 		OptionsOfItem = res.getStringArray(R.array.TBL_ITEM);
 		OptionsOfStore = res.getStringArray(R.array.TBL_STORE);;
