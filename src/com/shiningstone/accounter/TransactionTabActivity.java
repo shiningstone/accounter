@@ -45,18 +45,12 @@ public class TransactionTabActivity extends Activity implements OnCheckedChangeL
 		
 		ShowDate();
 		
-		SpinnerShow( CategorySpn, OptionsOfCategory );
-		SpinnerShow( SubCateSpn, OptionsOfSubCategory[0]);
-		SpinnerShow( AccountSpn, OptionsOfAccount);
-		SpinnerShow( ItemSpn, OptionsOfItem);
-		SpinnerShow( StoreSpn, OptionsOfStore);
-		
+		ExpenseBtn.setChecked(true);
+		ExpenseBtn.setOnCheckedChangeListener(this);
+
+		UpdateOptions();		
 		CategorySpn.setOnItemSelectedListener(this);
 		SubCateSpn.setOnItemSelectedListener(this);
-		
-		RadioButton rb1 = (RadioButton) findViewById(R.id.payout_tab_rb);
-		rb1.setChecked(true);
-		rb1.setOnCheckedChangeListener(this);
 	}
 
 	@Override
@@ -72,20 +66,13 @@ public class TransactionTabActivity extends Activity implements OnCheckedChangeL
 	
 	@Override
 	public void onCheckedChanged(CompoundButton view, boolean isChecked) {
-
-		if(ExpenseBtn.isChecked()) {
-			StoreFrm.setVisibility(View.VISIBLE);
-			EmptyFrm.setVisibility(View.GONE);
-		} else {
-			StoreFrm.setVisibility(View.GONE);
-			EmptyFrm.setVisibility(View.VISIBLE);
-		}
+		UpdateOptions();
 	}
 	
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int position, long id){
 		if( view==CategorySpn.getSelectedView() ) {
-			SpinnerShow( SubCateSpn, OptionsOfSubCategory[position]);
+			SpinnerShow( SubCateSpn, OptionsOfSubCategory[CashFlowOption][position]);
 		} else {
 			
 		}
@@ -95,10 +82,27 @@ public class TransactionTabActivity extends Activity implements OnCheckedChangeL
 	public void onNothingSelected(AdapterView<?> parent) {
 	}
 
-	
 	/**********************************************************
 	 *    private method
 	 **********************************************************/
+	private void UpdateOptions() {
+		if(ExpenseBtn.isChecked()) {
+			StoreFrm.setVisibility(View.VISIBLE);
+			EmptyFrm.setVisibility(View.GONE);
+			CashFlowOption = EXPENSE;
+		} else {
+			StoreFrm.setVisibility(View.GONE);
+			EmptyFrm.setVisibility(View.VISIBLE);
+			CashFlowOption = INCOME;
+		}
+		
+		SpinnerShow( CategorySpn, OptionsOfCategory[CashFlowOption] );
+		SpinnerShow( SubCateSpn, OptionsOfSubCategory[CashFlowOption][0]);
+		SpinnerShow( AccountSpn, OptionsOfAccount);
+		SpinnerShow( ItemSpn, OptionsOfItem);
+		SpinnerShow( StoreSpn, OptionsOfStore);
+	}
+	
 	private void ShowDate() {
 		TradeDateBtn.setText(format(calendar.getTime()));
 	}
@@ -123,6 +127,11 @@ public class TransactionTabActivity extends Activity implements OnCheckedChangeL
 	/**********************************************************
 	 *    resources control
 	 **********************************************************/
+	private final int CASH_FLOW = 2;
+	private final int INCOME = 0;
+	private final int EXPENSE = 1;
+	private int CashFlowOption = EXPENSE;
+	
 	private final int SUB_CATEGORY_NUM = 11;
 	
 	private Spinner CategorySpn = null;
@@ -131,8 +140,8 @@ public class TransactionTabActivity extends Activity implements OnCheckedChangeL
 	private Spinner ItemSpn = null;
 	private Spinner StoreSpn = null;
 	
-	private String[] OptionsOfCategory = null;
-	private String[][] OptionsOfSubCategory = new String[SUB_CATEGORY_NUM][];
+	private String[][] OptionsOfCategory = new String[CASH_FLOW][];
+	private String[][][] OptionsOfSubCategory = new String[CASH_FLOW][SUB_CATEGORY_NUM][];
 	private String[] OptionsOfAccount = null;
 	private String[] OptionsOfItem = null;
 	private String[] OptionsOfStore = null;
@@ -145,18 +154,23 @@ public class TransactionTabActivity extends Activity implements OnCheckedChangeL
 	private void LoadResources() {
 		Resources res = this.getResources();
 
-		OptionsOfCategory = res.getStringArray(R.array.TBL_EXPENDITURE_CATEGORY);
-		OptionsOfSubCategory[0] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_1);
-		OptionsOfSubCategory[1] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_2);
-		OptionsOfSubCategory[2] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_3);
-		OptionsOfSubCategory[3] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_4);
-		OptionsOfSubCategory[4] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_5);
-		OptionsOfSubCategory[5] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_6);
-		OptionsOfSubCategory[6] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_7);
-		OptionsOfSubCategory[7] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_8);
-		OptionsOfSubCategory[8] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_9);
-		OptionsOfSubCategory[9] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_10);
-		OptionsOfSubCategory[10] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_11);
+		OptionsOfCategory[EXPENSE] = res.getStringArray(R.array.TBL_EXPENDITURE_CATEGORY);
+		OptionsOfSubCategory[EXPENSE][0] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_1);
+		OptionsOfSubCategory[EXPENSE][1] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_2);
+		OptionsOfSubCategory[EXPENSE][2] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_3);
+		OptionsOfSubCategory[EXPENSE][3] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_4);
+		OptionsOfSubCategory[EXPENSE][4] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_5);
+		OptionsOfSubCategory[EXPENSE][5] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_6);
+		OptionsOfSubCategory[EXPENSE][6] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_7);
+		OptionsOfSubCategory[EXPENSE][7] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_8);
+		OptionsOfSubCategory[EXPENSE][8] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_9);
+		OptionsOfSubCategory[EXPENSE][9] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_10);
+		OptionsOfSubCategory[EXPENSE][10] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_11);
+
+		OptionsOfCategory[INCOME] = res.getStringArray(R.array.TBL_INCOME_CATEGORY);
+		OptionsOfSubCategory[INCOME][0] = res.getStringArray(R.array.TBL_INCOME_SUB_CATEGORY_1);
+		OptionsOfSubCategory[INCOME][1] = res.getStringArray(R.array.TBL_INCOME_SUB_CATEGORY_2);
+		
 		OptionsOfAccount = res.getStringArray(R.array.TBL_ACCOUNT);;
 		OptionsOfItem = res.getStringArray(R.array.TBL_ITEM);
 		OptionsOfStore = res.getStringArray(R.array.TBL_STORE);;
