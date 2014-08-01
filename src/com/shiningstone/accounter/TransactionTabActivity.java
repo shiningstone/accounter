@@ -54,6 +54,8 @@ public class TransactionTabActivity extends Activity implements OnClickListener,
 		CategorySpn.setOnItemSelectedListener(this);
 		SubCateSpn.setOnItemSelectedListener(this);
 		TradeDateBtn.setOnClickListener(this);
+		MemoBtn.setOnClickListener(this);
+		AmountBtn.setOnClickListener(this);
 	}
 
 	@Override
@@ -61,9 +63,7 @@ public class TransactionTabActivity extends Activity implements OnClickListener,
 		if(requestCode==0 && resultCode==Activity.RESULT_OK) {
 			Bundle extras = data.getExtras();
 			String value = extras.getString("value");
-			
-			Button cost_btn = (Button)findViewById(R.id.cost_btn);
-			cost_btn.setText(DecimalFormat.getCurrencyInstance().format(Double.parseDouble(value)));
+			AmountBtn.setText(DecimalFormat.getCurrencyInstance().format(Double.parseDouble(value)));
 		}
 	}
 	
@@ -87,25 +87,31 @@ public class TransactionTabActivity extends Activity implements OnClickListener,
 
 	@Override
 	public void onClick(View v) {
-		if( v==CostBtn ) {
-			//Intent i = new Intent(TransactionTabActivity.this,KeyPad.class);
-			//i.putExtra("value", "0");
-			//startActivityForResult(i, 0);
+		if( v==AmountBtn ) {
+			UpdateAmount();
 		}
 		
 		if( v==TradeDateBtn ) {
-			DatePickerDialog datePicker = new DatePickerDialog(this, 
-					mDateSetListenerSatrt,
-					calendar.get(Calendar.YEAR), 
-					calendar.get(Calendar.MONTH), 
-					calendar.get(Calendar.DAY_OF_MONTH));
-			datePicker.show();
+			UpdateDate();
 		}
 
+		if( v==MemoBtn ) {
+			UpdateMemo();
+		}
 	}
 	/**********************************************************
 	 *    private method
 	 **********************************************************/
+	private void UpdateMemo() {
+		
+	}
+	
+	private void UpdateAmount() {
+		Intent intent = new Intent(TransactionTabActivity.this,Keypad.class);
+		intent.putExtra("value", "0");
+		startActivityForResult(intent, 0);
+	}
+	
 	private DatePickerDialog.OnDateSetListener mDateSetListenerSatrt = new DatePickerDialog.OnDateSetListener() {
 		public void onDateSet(DatePicker view, int year, int month, int day) {
 			calendar.set(Calendar.YEAR, year);
@@ -116,6 +122,15 @@ public class TransactionTabActivity extends Activity implements OnClickListener,
 		}
 	};
 
+	private void UpdateDate() {
+		DatePickerDialog datePicker = new DatePickerDialog(this, 
+				mDateSetListenerSatrt,
+				calendar.get(Calendar.YEAR), 
+				calendar.get(Calendar.MONTH), 
+				calendar.get(Calendar.DAY_OF_MONTH));
+		datePicker.show();
+	}
+	
 	private void UpdateOptions() {
 		if(ExpenseBtn.isChecked()) {
 			StoreFrm.setVisibility(View.VISIBLE);
@@ -178,7 +193,8 @@ public class TransactionTabActivity extends Activity implements OnClickListener,
 	private String[] OptionsOfStore = null;
 	
 	private Button TradeDateBtn = null;
-	private Button CostBtn = null;
+	private Button AmountBtn = null;
+	private Button MemoBtn = null;
 	private RadioButton ExpenseBtn = null;
 	private FrameLayout StoreFrm = null;
 	private FrameLayout EmptyFrm = null;
@@ -215,6 +231,8 @@ public class TransactionTabActivity extends Activity implements OnClickListener,
 
 		TradeDateBtn = (Button) findViewById(R.id.trade_time_btn);
 		ExpenseBtn = (RadioButton) findViewById(R.id.payout_tab_rb);
+		AmountBtn = (Button) findViewById(R.id.cost_btn);
+		MemoBtn = (Button) findViewById(R.id.memo_btn);
 		StoreFrm = (FrameLayout)findViewById(R.id.corporation_fl);
 		EmptyFrm = (FrameLayout)findViewById(R.id.empty_fl);
 	}
