@@ -9,7 +9,7 @@ import android.widget.Button;
 
 public class Keypad extends Activity implements OnClickListener {
 	private String value = "0";
-	private boolean isValueEmpty = false;
+	private boolean isValueEmpty = true;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -17,11 +17,72 @@ public class Keypad extends Activity implements OnClickListener {
 		setContentView(R.layout.digit_keypad);
 		
 		LoadResources();
+
+		if(this.getIntent().hasExtra("value")) {
+			value = this.getIntent().getStringExtra("value");
+			isValueEmpty = false;
+		}
+		
+		BtnCtrl[SHOW].setText(value);
 	}
 	
 	@Override
 	public void onClick(View v) {
+		switch (v.getId()) {
+			case R.id.display:
+				break;
+			case R.id.delete:
+				value = Backspace(value);
+				break;
+			case R.id.clean:
+				value = "0";
+				break;
+			case R.id.cancel:
+				this.setResult(RESULT_CANCELED);
+				this.finish();
+				break;
+			case R.id.done:
+				this.setResult(RESULT_OK, this.getIntent().putExtra("value", value));
+				this.finish();
+				break;
+			case R.id.dot:
+				if( !DotExists() ) {
+					AddDigit( ((Button)v).getText() );
+				}
+				break;
+			default:
+				if (value.equals("0")) {
+					value = "";
+				}
+				AddDigit( ((Button)v).getText() );
+				break;
+		}
+		
+		BtnCtrl[SHOW].setText(value);
+	}
 	
+	private void AddDigit(CharSequence digit) {
+		if( DotExists() ) {
+			if (value.length() < 9) {
+				value = value + digit;
+			}
+		} else {
+			if (value.length() < 6) {
+				value = value + digit;
+			}
+		}
+	}
+	
+	private boolean DotExists() {
+		return (value.indexOf(".")>-1);
+	}
+	
+	private String Backspace(String value) {
+		if ( value.length()>1 ) {
+			return value.substring(0, value.length() - 1);
+		} else {
+			return "0";
+		}
 	}
 	
 	private void LoadResources() {
