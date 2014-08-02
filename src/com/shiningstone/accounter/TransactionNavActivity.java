@@ -17,7 +17,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-public class NavExpenseActivity extends Activity implements OnClickListener, OnItemClickListener, OnItemLongClickListener{
+public class TransactionNavActivity extends Activity implements OnClickListener, OnItemClickListener, OnItemLongClickListener{
 	Date mStartDate = null;
 	Date mEndDate = null;
 	int  mMode = MODE_NONE;
@@ -25,7 +25,7 @@ public class NavExpenseActivity extends Activity implements OnClickListener, OnI
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.nav_expense_activity);
+		setContentView(R.layout.transaction_nav_activity);
 		
 		GetParamsFromParent();
 		LoadResources();

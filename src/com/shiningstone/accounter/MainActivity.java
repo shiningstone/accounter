@@ -46,13 +46,13 @@ public class MainActivity extends Activity implements OnClickListener {
 				StartTransactionTabActivity();
 				break;
 			case R.id.today_row_rl:
-				StartNavExpenseActivity(mDate.CurDate(), mDate.CurDate(), NavExpenseActivity.MODE_DAY);
+				StartTransactionNavActivity(mDate.CurDate(), mDate.CurDate(), TransactionNavActivity.MODE_DAY);
 				break;
 			case R.id.week_row_rl:
-				StartNavExpenseActivity(mDate.WeekStart(), mDate.WeekEnd(), NavExpenseActivity.MODE_WEEK);
+				StartTransactionNavActivity(mDate.WeekStart(), mDate.WeekEnd(), TransactionNavActivity.MODE_WEEK);
 				break;
 			case R.id.month_row_rl:
-				StartNavExpenseActivity(mDate.MonthStart(), mDate.MonthEnd(), NavExpenseActivity.MODE_MONTH);
+				StartTransactionNavActivity(mDate.MonthStart(), mDate.MonthEnd(), TransactionNavActivity.MODE_MONTH);
 				break;
 		}
 	}
@@ -64,13 +64,13 @@ public class MainActivity extends Activity implements OnClickListener {
 		finish();
 	}
 	
-	private void StartNavExpenseActivity(Date start, Date end, int mode)
+	private void StartTransactionNavActivity(Date start, Date end, int mode)
 	{
-		Intent intent = new Intent(this, NavExpenseActivity.class);
+		Intent intent = new Intent(this, TransactionNavActivity.class);
 		
-		intent.putExtra(NavExpenseActivity.START_DATE, start.getTime());
-		intent.putExtra(NavExpenseActivity.END_DATE,   end.getTime());
-		intent.putExtra(NavExpenseActivity.MODE,       mode);
+		intent.putExtra(TransactionNavActivity.START_DATE, start.getTime());
+		intent.putExtra(TransactionNavActivity.END_DATE,   end.getTime());
+		intent.putExtra(TransactionNavActivity.MODE,       mode);
 		
 		startActivity(intent);
 	}
