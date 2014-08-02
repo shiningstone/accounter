@@ -9,7 +9,9 @@ import java.util.Date;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
@@ -23,6 +25,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.RadioButton;
 import android.widget.Spinner;
@@ -103,7 +106,21 @@ public class TransactionTabActivity extends Activity implements OnClickListener,
 	 *    private method
 	 **********************************************************/
 	private void UpdateMemo() {
-		
+		MemoText = new EditText(this);
+		MemoText.setLines(5);
+		MemoText.setText(MemoBtn.getText());
+		AlertDialog dialog = new AlertDialog.Builder(this)
+						.setTitle(getString(R.string.dialog_memo_title))
+						.setView(MemoText)
+						.setPositiveButton(getString(R.string.dialog_memo_ok), new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								MemoBtn.setText(MemoText.getText());
+							}
+						}).setNegativeButton(getString(R.string.dialog_memo_cancle), new DialogInterface.OnClickListener() {
+							public void onClick(DialogInterface dialog, int which) {
+							}
+						}).show();
 	}
 	
 	private void UpdateAmount() {
@@ -198,6 +215,8 @@ public class TransactionTabActivity extends Activity implements OnClickListener,
 	private RadioButton ExpenseBtn = null;
 	private FrameLayout StoreFrm = null;
 	private FrameLayout EmptyFrm = null;
+	
+	private EditText MemoText = null;
 	
 	private void LoadResources() {
 		Resources res = this.getResources();
