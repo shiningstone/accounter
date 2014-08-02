@@ -32,11 +32,26 @@ public class TransactionNavActivity extends Activity implements OnClickListener,
 		AddActions();
 		
 		TitleText.setText(INTERVALS[mMode]);
-		setTimeIntervalText();
+		ShowTimeSpan();
 		
 		ExpensesList.setEmptyView(TipsLayout);
 	}
 	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		RefreshTransactions();
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		
+		if (requestCode == 0) {
+			RefreshTransactions();
+		}
+	}
+
 	@Override
 	public void onClick(View v) {
 		if( v==PrevBtn ) {
@@ -46,7 +61,8 @@ public class TransactionNavActivity extends Activity implements OnClickListener,
 		} else {
 		}
 		
-		setTimeIntervalText();
+		ShowTimeSpan();
+		RefreshTransactions();
 	}
 
 	@Override
@@ -56,6 +72,13 @@ public class TransactionNavActivity extends Activity implements OnClickListener,
 	
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+	}
+	
+	/******************************************************************
+				PRIVATE METHODS
+	******************************************************************/
+	private void RefreshTransactions() {
+		new TransactionListAsyncTask().execute(this);
 	}
 	
 	private void DateIncrease(int step) {
@@ -92,7 +115,7 @@ public class TransactionNavActivity extends Activity implements OnClickListener,
 		}
 	}
 	
-	private void setTimeIntervalText() {
+	private void ShowTimeSpan() {
 		if ( mStartDate.getDate() == mEndDate.getDate() ) {
 			SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
 			IntervalText.setText(sdf.format(mStartDate));
@@ -131,6 +154,9 @@ public class TransactionNavActivity extends Activity implements OnClickListener,
 		mMode      = intent.getIntExtra(MODE, MODE_NONE);
 	}
 	
+	/******************************************************************
+				MEMBERS
+	******************************************************************/
 	public static String START_DATE 	= "startTime";
 	public static String END_DATE   	= "endTime";
 	public static String MODE   		= "mode";
@@ -144,9 +170,9 @@ public class TransactionNavActivity extends Activity implements OnClickListener,
 	private final static String DATE_FORMAT = "yyyy-MM-dd";
 	private String[] INTERVALS = null;
 	
+	ListView ExpensesList = null;
 	private TextView TitleText = null;
 	private TextView IntervalText = null;
-	private ListView ExpensesList = null;
 	private View     TipsLayout = null;
 	private Button   PrevBtn = null;
 	private Button   NextBtn = null;
