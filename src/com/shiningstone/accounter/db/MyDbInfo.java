@@ -50,7 +50,7 @@ class Table {
 };
 
 public class MyDbInfo {
-	private static Table[] Tables = null;
+	public static Table[] Tables = null;
 	private static String[] TableNames = null;
 	private static String[][] FieldNames = null;
 	private static String[][] FieldTypes = null;
