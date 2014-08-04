@@ -1,5 +1,12 @@
 
+/*************************************************************
+		this file describes the structure of the database
+*************************************************************/
+
 package com.shiningstone.accounter.db;
+
+import java.util.ArrayList;
+import java.util.List;
 
 class Field {
 	public static final int ID = 0;
@@ -16,20 +23,17 @@ class Field {
 };
 
 class Table {
-	public String Name;
-	public Field[] Fields;
-	private int idx;
+	public String      Name;
+	public List<Field> Fields = new ArrayList<Field>();
 	
 	public Table(String name) {
 		Name = name;
-		idx = 0;
-		
 		AddField(Field.ID);
 	}
 	
 	public void AddField(String fname,String ftype) {
-		Fields[idx] = new Field(fname,ftype);
-		idx++;
+		Field f = new Field(fname,ftype);
+		Fields.add( f );
 	}
 	
 	public void AddField(int type) {
@@ -50,38 +54,28 @@ class Table {
 };
 
 public class MyDbInfo {
-	public static Table[] Tables = null;
-	private static String[] TableNames = null;
-	private static String[][] FieldNames = null;
-	private static String[][] FieldTypes = null;
-
-	public MyDbInfo() {
+	public static Table[] Tables = new Table[12];
+	/**********************************************************
+				Singleton
+	**********************************************************/
+	private static MyDbInfo instance = null;
+	private MyDbInfo() {
 		TablesInit();
-		
-		int tblIdx = 0;
-		for(; tblIdx<Tables.length; tblIdx++) {
-			TableNames[tblIdx] = Tables[tblIdx].Name;
-			
-			int fieldIdx = 0;
-			for(; fieldIdx<Tables[tblIdx].Fields.length; fieldIdx++) {
-				FieldNames[tblIdx][fieldIdx] = Tables[tblIdx].Fields[fieldIdx].Name;
-				FieldTypes[tblIdx][fieldIdx] = Tables[tblIdx].Fields[fieldIdx].Type;
-			}
+	}
+	
+	public static MyDbInfo getInstance() {
+		if(instance == null){
+			instance = new MyDbInfo();
 		}
+		return instance;
 	}
-	
-	public static String[] getTableNames() {
-		return TableNames;
+
+	public String TableName(int idx) {
+		return Tables[idx].Name;
 	}
-	
-	public static String[][] getFieldNames() {
-		return FieldNames;
-	}
-	
-	public static String[][] getFieldTypes() {
-		return FieldTypes;
-	}
-	
+	/**********************************************************
+				private methods
+	**********************************************************/
 	private void TablesInit() {
 		Tables[0] = new Table("EXPENSE_CATEGORY");
 		Tables[0].AddField(Field.NAME);
@@ -104,7 +98,7 @@ public class MyDbInfo {
 		
 		Tables[5] = new Table("ACCOUNT_SUB_TYPE");
 		Tables[5].AddField(Field.NAME);
-		Tables[5].AddField("PARENT_CATEGORY_ID","INTEGER");
+		Tables[5].AddField("PARENT_TYPE_ID","INTEGER");
 		
 		Tables[6] = new Table("ACCOUNT");
 		Tables[6].AddField(Field.NAME);
@@ -120,8 +114,8 @@ public class MyDbInfo {
 		
 		Tables[9] = new Table("EXPENSE");
 		Tables[9].AddField(Field.AMOUNT);
-		Tables[9].AddField("EXPENDITURE_CATEGORY_ID","INTEGER");
-		Tables[9].AddField("EXPENDITURE_SUB_CATEGORY_ID","INTEGER");
+		Tables[9].AddField("EXPENSE_CATEGORY_ID","INTEGER");
+		Tables[9].AddField("EXPENSE_SUB_CATEGORY_ID","INTEGER");
 		Tables[9].AddField("ACCOUNT_ID","INTEGER");
 		Tables[9].AddField("STORE_ID","INTEGER");
 		Tables[9].AddField("ITEM_ID","INTEGER");

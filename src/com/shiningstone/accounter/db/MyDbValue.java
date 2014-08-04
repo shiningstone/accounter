@@ -1,4 +1,8 @@
 
+/*************************************************************
+		this file collects the strings stored in the database
+*************************************************************/
+
 package com.shiningstone.accounter.db;
 
 import com.shiningstone.accounter.R;
@@ -12,9 +16,11 @@ public class MyDbValue {
 	
 	public static String[][]   Categories = new String[2][];
 	public static String[][][] SubCategories = new String[2][11][];
+	public static String[]     AccountTypes = null;
+	public static String[][]   AccountSubTypes = new String[5][];
 	public static String[]     Accounts = null;
-	public static String[]     Items = null;
 	public static String[]     Stores = null;
+	public static String[]     Items = null;
 	
 	/**********************************************************
 				Singleton
@@ -50,7 +56,14 @@ public class MyDbValue {
 		SubCategories[INCOME][0] = res.getStringArray(R.array.TBL_INCOME_SUB_CATEGORY_1);
 		SubCategories[INCOME][1] = res.getStringArray(R.array.TBL_INCOME_SUB_CATEGORY_2);
 		
+		AccountTypes = res.getStringArray(R.array.TBL_ACCOUNT_TYPE);
+		AccountSubTypes[0] = res.getStringArray(R.array.TBL_ACCOUNT_SUB_TYPE_1);
+		AccountSubTypes[1] = res.getStringArray(R.array.TBL_ACCOUNT_SUB_TYPE_2);
+		AccountSubTypes[2] = res.getStringArray(R.array.TBL_ACCOUNT_SUB_TYPE_3);
+		AccountSubTypes[3] = res.getStringArray(R.array.TBL_ACCOUNT_SUB_TYPE_4);
+		AccountSubTypes[4] = res.getStringArray(R.array.TBL_ACCOUNT_SUB_TYPE_5);
 		Accounts = res.getStringArray(R.array.TBL_ACCOUNT);
+		
 		Items = res.getStringArray(R.array.TBL_ITEM);
 		Stores = res.getStringArray(R.array.TBL_STORE);
 	}

@@ -17,15 +17,12 @@ public class MyDbHelper
 	private final Context mCtx;
 
 	private MyDbHelper(Context ctx) {
-			this.mCtx = ctx;
+		this.mCtx = ctx;
 	}
 
 	public static MyDbHelper getInstance(Context context){
 		if(openHelper == null){
 			openHelper = new MyDbHelper(context);
-			TableNames = MyDbInfo.getTableNames();
-			FieldNames = MyDbInfo.getFieldNames();
-			FieldTypes = MyDbInfo.getFieldTypes();
 		}
 		return openHelper;
 	}
@@ -88,12 +85,13 @@ public class MyDbHelper
 		);
 	}
 
-	public long insert(String table, String fields[], String values[])
+	public long insert(String table, String fields[][])
 	{
+		final int KEY = 0;
+		final int VALUE = 1;
 		ContentValues cv = new ContentValues();
-		for (int i = 0; i < fields.length; i++)
-		{
-			cv.put(fields[i], values[i]);
+		for (int i = 0; i < fields.length; i++) {
+			cv.put(fields[i][KEY], fields[i][VALUE]);
 		}
 		return mDb.insert(table, null, cv);
 	}
@@ -114,25 +112,15 @@ public class MyDbHelper
 		return mDb.update(table, cv, where, whereValue);
 	}
 
-	/* no use? */
-	private static String TableNames[];
-	private static String FieldNames[][];
-	private static String FieldTypes[][];
-
-	public void insertTables(String[] tableNames,String[][] fieldNames,String[][] fieldTypes){
-		TableNames = tableNames;
-		FieldNames = fieldNames;
-		FieldTypes = fieldTypes;
-	}
-  
 	/****************************************************************
 				private methods
 	****************************************************************/
 	private static void CreateTables(SQLiteDatabase db) {
 		for (int i = 0; i < MyDbInfo.Tables.length; i++) {
 			String sql = "CREATE TABLE " + MyDbInfo.Tables[i].Name + " (";
-			for (int j = 0; j < MyDbInfo.Tables[i].Fields.length; j++){
-				sql += MyDbInfo.Tables[i].Fields[j].Name + " " + MyDbInfo.Tables[i].Fields[j].Type + ",";
+			for (int j = 0; j < MyDbInfo.Tables[i].Fields.size(); j++){
+				sql += MyDbInfo.Tables[i].Fields.get(j).Name + " " 
+						+ MyDbInfo.Tables[i].Fields.get(j).Type + ",";
 			}
 			sql = sql.substring(0, sql.length() - 1);
 			sql += ")";
