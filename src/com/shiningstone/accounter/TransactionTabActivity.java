@@ -8,6 +8,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import com.shiningstone.accounter.db.MyDbValue;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -47,6 +49,7 @@ public class TransactionTabActivity extends Activity implements OnClickListener,
 		Intent intent = getIntent();
 		mMode = intent.getIntExtra("mode", 1);
 
+		LoadDbStrings();
 		LoadResources();
 		
 		ShowDate();
@@ -78,7 +81,7 @@ public class TransactionTabActivity extends Activity implements OnClickListener,
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int position, long id){
 		if( view==CategorySpn.getSelectedView() ) {
-			SpinnerShow( SubCateSpn, OptionsOfSubCategory[CashFlowOption][position]);
+			SpinnerShow( SubCateSpn, mDbStrings.SubCategories[CashFlowOption][position]);
 		} else {
 			
 		}
@@ -159,11 +162,11 @@ public class TransactionTabActivity extends Activity implements OnClickListener,
 			CashFlowOption = INCOME;
 		}
 		
-		SpinnerShow( CategorySpn, OptionsOfCategory[CashFlowOption] );
-		SpinnerShow( SubCateSpn, OptionsOfSubCategory[CashFlowOption][0]);
-		SpinnerShow( AccountSpn, OptionsOfAccount);
-		SpinnerShow( ItemSpn, OptionsOfItem);
-		SpinnerShow( StoreSpn, OptionsOfStore);
+		SpinnerShow( CategorySpn, mDbStrings.Categories[CashFlowOption] );
+		SpinnerShow( SubCateSpn,  mDbStrings.SubCategories[CashFlowOption][0]);
+		SpinnerShow( AccountSpn,  mDbStrings.Accounts);
+		SpinnerShow( ItemSpn,     mDbStrings.Items);
+		SpinnerShow( StoreSpn,    mDbStrings.Stores);
 	}
 	
 	private void ShowDate() {
@@ -191,8 +194,8 @@ public class TransactionTabActivity extends Activity implements OnClickListener,
 	 *    resources control
 	 **********************************************************/
 	private final int CASH_FLOW = 2;
-	private final int INCOME = 0;
-	private final int EXPENSE = 1;
+	private final int EXPENSE = 0;
+	private final int INCOME = 1;
 	private int CashFlowOption = EXPENSE;
 	
 	private final int SUB_CATEGORY_NUM = 11;
@@ -202,12 +205,7 @@ public class TransactionTabActivity extends Activity implements OnClickListener,
 	private Spinner AccountSpn = null;
 	private Spinner ItemSpn = null;
 	private Spinner StoreSpn = null;
-	
-	private String[][] OptionsOfCategory = new String[CASH_FLOW][];
-	private String[][][] OptionsOfSubCategory = new String[CASH_FLOW][SUB_CATEGORY_NUM][];
-	private String[] OptionsOfAccount = null;
-	private String[] OptionsOfItem = null;
-	private String[] OptionsOfStore = null;
+	private MyDbValue mDbStrings = null;
 	
 	private Button TradeDateBtn = null;
 	private Button AmountBtn = null;
@@ -218,29 +216,12 @@ public class TransactionTabActivity extends Activity implements OnClickListener,
 	
 	private EditText MemoText = null;
 	
+	private void LoadDbStrings() {
+		mDbStrings = MyDbValue.getInstance( this.getApplicationContext() );
+	}
+	
 	private void LoadResources() {
 		Resources res = this.getResources();
-
-		OptionsOfCategory[EXPENSE] = res.getStringArray(R.array.TBL_EXPENDITURE_CATEGORY);
-		OptionsOfSubCategory[EXPENSE][0] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_1);
-		OptionsOfSubCategory[EXPENSE][1] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_2);
-		OptionsOfSubCategory[EXPENSE][2] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_3);
-		OptionsOfSubCategory[EXPENSE][3] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_4);
-		OptionsOfSubCategory[EXPENSE][4] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_5);
-		OptionsOfSubCategory[EXPENSE][5] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_6);
-		OptionsOfSubCategory[EXPENSE][6] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_7);
-		OptionsOfSubCategory[EXPENSE][7] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_8);
-		OptionsOfSubCategory[EXPENSE][8] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_9);
-		OptionsOfSubCategory[EXPENSE][9] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_10);
-		OptionsOfSubCategory[EXPENSE][10] = res.getStringArray(R.array.TBL_EXPENDITURE_SUB_CATEGORY_11);
-
-		OptionsOfCategory[INCOME] = res.getStringArray(R.array.TBL_INCOME_CATEGORY);
-		OptionsOfSubCategory[INCOME][0] = res.getStringArray(R.array.TBL_INCOME_SUB_CATEGORY_1);
-		OptionsOfSubCategory[INCOME][1] = res.getStringArray(R.array.TBL_INCOME_SUB_CATEGORY_2);
-		
-		OptionsOfAccount = res.getStringArray(R.array.TBL_ACCOUNT);;
-		OptionsOfItem = res.getStringArray(R.array.TBL_ITEM);
-		OptionsOfStore = res.getStringArray(R.array.TBL_STORE);;
 		
 		CategorySpn = (Spinner) findViewById(R.id.first_level_category_spn);
 		SubCateSpn = (Spinner) findViewById(R.id.sub_category_spn);
