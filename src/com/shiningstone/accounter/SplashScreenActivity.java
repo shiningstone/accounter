@@ -100,7 +100,6 @@ public class SplashScreenActivity extends Activity {
 			}
 		}
 		
-		/************************************************/
 		arr = dbStrings.Accounts;
 		for (int i = 0; i < arr.length; i++) {
 			String fields[] = arr[i].split(","); 

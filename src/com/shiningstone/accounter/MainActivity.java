@@ -6,8 +6,11 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import com.shiningstone.accounter.db.MyDbHelper;
+
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -15,22 +18,12 @@ import android.widget.Button;
 import android.widget.TextView;
 
 public class MainActivity extends Activity implements OnClickListener {
-	private final String SHOW_MONTH_DAY = "MM/dd";
-	private final String SHOW_DAY       = "dd";
-	
-	private SmartDate mDate = new SmartDate();
 
-	private Button add_expense_quickly_btn = null;
-	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_activity);
-
-		SummaryShow();
-		DaySummaryShow();
-		WeekSummaryShow();
-		MonthSummaryShow();
+		DisplayUpdate();
 		StartListen();
 	}
 	
@@ -52,37 +45,79 @@ public class MainActivity extends Activity implements OnClickListener {
 		}
 	}
 	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		
+		if (resultCode == RESULT_OK){
+			DisplayUpdate();
+		}
+	}
 	/*********************************************************
 				Resources control
 	*********************************************************/
+	private void DisplayUpdate() {
+		SummaryShow();
+		DaySummaryShow();
+		WeekSummaryShow();
+		MonthSummaryShow();
+	}
+	
+	private void SummaryShow() {
+		MyDbHelper db = MyDbHelper.getInstance( this.getApplicationContext() );
+	
+		double expense  = db.GetSum("EXPENSE","AMOUNT",null,null);
+		double income   = db.GetSum("INCOME","AMOUNT",null,null);
+		double banlance = db.GetSum("EXPENSE_CATEGORY","BUDGET",null,null);
+		
+		TextShow( R.id.month_tv, mDate.mMonth );
+		TextShow( R.id.income_amount_tv, "¥ " + income );
+		TextShow( R.id.expense_amount_tv, "¥ " + expense );
+		TextShow( R.id.budget_balance_amount_tv, "¥ " + banlance );
+	}
+
 	private void DaySummaryShow() {
+		MyDbHelper db = MyDbHelper.getInstance( this.getApplicationContext() );
+		String CurDay = Transform(mDate.CurDate(),SHOW_FULL);
+		
+		double expense  = db.GetSum("EXPENSE","AMOUNT",CurDay,null);
+		double income   = db.GetSum("INCOME", "AMOUNT",CurDay,null);
+		
 		TextShow( R.id.today_datestr_tv, mDate.mYear + "/" + mDate.mMonth + "/" + mDate.mDay );
-		TextShow( R.id.today_expense_amount_tv, "- ¥ " + 4 );
-		TextShow( R.id.today_income_amount_tv, "¥ " + 5 );
+		TextShow( R.id.today_expense_amount_tv, "- ¥ " + expense );
+		TextShow( R.id.today_income_amount_tv, "¥ " + income );
 	}
 	
 	private void WeekSummaryShow() {
 		Date Monday = mDate.WeekStart();
 		Date Sunday = mDate.WeekEnd();
 		
+		MyDbHelper db = MyDbHelper.getInstance( this.getApplicationContext() );
+		String sMonday = Transform(Monday,SHOW_FULL);
+		String sSunday = Transform(Sunday,SHOW_FULL);
+
+		double expense  = db.GetSum("EXPENSE","AMOUNT",sMonday,sSunday);
+		double income   = db.GetSum("INCOME", "AMOUNT",sMonday,sSunday);
+
 		TextShow( R.id.week_datestr_tv, Transform(Monday,SHOW_MONTH_DAY) + "-" + Transform(Sunday,SHOW_MONTH_DAY) );
-		TextShow( R.id.week_expense_amount_tv, "- ¥ " + 6 );
-		TextShow( R.id.week_income_amount_tv, "¥ " + 7 );
+		TextShow( R.id.week_expense_amount_tv, "- ¥ " + expense );
+		TextShow( R.id.week_income_amount_tv, "¥ " + income );
 	}
 	
 	private void MonthSummaryShow() {
+		Date FirstDay = mDate.MonthStart();
 		Date LastDay = mDate.MonthEnd();
 		
-		TextShow( R.id.month_datestr_tv, mDate.mMonth + "/01" + "-" + Transform(LastDay,SHOW_MONTH_DAY) );
-		TextShow( R.id.month_expense_amount_tv, "- ¥ " + 8 );
-		TextShow( R.id.month_income_amount_tv, "¥ " + 9 );
-	}
+		MyDbHelper db = MyDbHelper.getInstance( this.getApplicationContext() );
+		String sFirstDay = Transform(FirstDay,SHOW_FULL);
+		String sLastDay  = Transform(LastDay,SHOW_FULL);
 
-	private void SummaryShow() {
-		TextShow( R.id.month_tv, mDate.mMonth );
-		TextShow( R.id.income_amount_tv, "¥ " + 1 );
-		TextShow( R.id.expense_amount_tv, "¥ " + 2 );
-		TextShow( R.id.budget_balance_amount_tv, "¥ " + 3 );
+		double expense  = db.GetSum("EXPENSE","AMOUNT",sFirstDay,sLastDay);
+		double income   = db.GetSum("INCOME", "AMOUNT",sFirstDay,sLastDay);
+
+		TextShow( R.id.month_datestr_tv, Transform(FirstDay,SHOW_MONTH_DAY) + "-" + Transform(LastDay,SHOW_MONTH_DAY) );
+		TextShow( R.id.month_expense_amount_tv, "- ¥ " + expense );
+		TextShow( R.id.month_income_amount_tv, "¥ " + income );
 	}
 
 	private void TextShow(int id,String value) {
@@ -122,6 +157,14 @@ public class MainActivity extends Activity implements OnClickListener {
 		startActivity(intent);
 	}
 
+	/*********************************************************
+				private member
+	*********************************************************/
+	private final String SHOW_FULL      = "yyyy-MM-dd";
+	private final String SHOW_MONTH_DAY = "MM/dd";
+	private final String SHOW_DAY       = "dd";
+	private SmartDate mDate = new SmartDate();
+	
 	/*********************************************************
 				SmartDate
 	*********************************************************/

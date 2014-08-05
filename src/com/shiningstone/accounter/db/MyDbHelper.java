@@ -52,6 +52,49 @@ public class MyDbHelper
 	}
 	
 	/****************************************************************
+				user interface
+	****************************************************************/
+	public double GetSum(String table, String field, String startDate, String endDate) {
+		String timespan = SqlTimeSpan(startDate,endDate);
+		String[] param = SqlTimeParam(startDate,endDate);
+		
+		String sql = "select sum(" + field + ") from " + table + timespan;
+		
+		Cursor cursor = mDb.rawQuery( sql, param );
+		if( cursor.moveToNext() ) {
+			return cursor.getDouble(0);
+		} else {
+			return 0;
+		}
+	}
+	
+	private String SqlTimeSpan( String start, String end ) {
+		if ( start==null && end==null ) {
+			return "";
+		} else if ( end==null ) {
+			return " where strftime('%Y-%m-%d',DATE)=?";
+		} else {
+			return " where strftime('%Y-%m-%d',DATE)>=? and strftime('%Y-%m-%d',DATE)<=?";
+		}
+	}
+	
+	private String[] SqlTimeParam( String start, String end ) {
+		String[] param = null;
+		
+		if ( start==null && end==null ) {
+			param = null;
+		} else if ( end==null ) {
+			param = new String[1];
+			param[0] = new String(start);
+		} else {
+			param = new String[2];
+			param[0] = new String(start);
+			param[1] = new String(end);
+		}
+		
+		return param;
+	}
+	/****************************************************************
 				database operations
 	****************************************************************/
 	public MyDbHelper open() throws SQLException {
