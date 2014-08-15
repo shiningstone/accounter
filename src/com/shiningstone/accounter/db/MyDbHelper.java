@@ -1,6 +1,8 @@
 
 package com.shiningstone.accounter.db;
 
+import java.util.ArrayList;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -15,9 +17,11 @@ public class MyDbHelper
 	**********************************************************/
 	private static MyDbHelper openHelper = null;
 	private final Context mCtx;
+	private MyDbInfo mDbInfo = null;
 
 	private MyDbHelper(Context ctx) {
 		this.mCtx = ctx;
+		this.mDbInfo = MyDbInfo.getInstance();
 	}
 
 	public static MyDbHelper getInstance(Context context){
@@ -68,6 +72,65 @@ public class MyDbHelper
 		}
 	}
 	
+	public void LoadIdName( ArrayList<Integer> ids, ArrayList<String> names, int tblIdx ) {
+		ids.clear();
+		names.clear();
+		
+		Cursor cursor = mDb.query( mDbInfo.TableName(tblIdx), mDbInfo.FieldNames(tblIdx), null, null, null, null, null);
+		while( cursor.moveToNext() ) {
+			ids.add( cursor.getInt(0) );
+			names.add( cursor.getString(1) );
+		}
+		cursor.close();
+	}
+
+	public void LoadIdBudget( ArrayList<Integer> ids, ArrayList<String> names, ArrayList<Double> budgets, int tblIdx ) {
+		ids.clear();
+		names.clear();
+		budgets.clear();
+		
+		Cursor cursor = mDb.query( mDbInfo.TableName(tblIdx), mDbInfo.FieldNames(tblIdx), null, null, null, null, null);
+		while( cursor.moveToNext() ) {
+			ids.add( cursor.getInt(0) );
+			names.add( cursor.getString(1) );
+			budgets.add( cursor.getDouble(2) );
+		}
+		cursor.close();
+	}
+
+	public void LoadIdNameNum( ArrayList<Integer> ids, ArrayList<String> names, ArrayList<Integer> num, int tblIdx ) {
+		ids.clear();
+		names.clear();
+		num.clear();
+		
+		Cursor cursor = mDb.query( mDbInfo.TableName(tblIdx), mDbInfo.FieldNames(tblIdx), null, null, null, null, null);
+		while( cursor.moveToNext() ) {
+			ids.add( cursor.getInt(0) );
+			names.add( cursor.getString(1) );
+			num.add( cursor.getInt(2) );
+		}
+		cursor.close();
+	}
+	
+	public void LoadAccountData( ArrayList<Integer> ids, ArrayList<String> names, ArrayList<Integer> type,
+								ArrayList<Integer> cate, ArrayList<Double> amount, int tblIdx) {
+		ids.clear();
+		names.clear();
+		type.clear();
+		cate.clear();
+		amount.clear(); 
+
+		Cursor cursor = mDb.query( mDbInfo.TableName(tblIdx), mDbInfo.FieldNames(tblIdx), null, null, null, null, null);
+		while( cursor.moveToNext() ) {
+			ids.add( cursor.getInt(0) );
+			names.add( cursor.getString(1) );
+			type.add( cursor.getInt(2) );
+			cate.add( cursor.getInt(3) );
+			amount.add( cursor.getDouble(4) ); 
+		}
+		cursor.close();
+	}
+	
 	private String SqlTimeSpan( String start, String end ) {
 		if ( start==null && end==null ) {
 			return "";
@@ -94,6 +157,7 @@ public class MyDbHelper
 		
 		return param;
 	}
+	
 	/****************************************************************
 				database operations
 	****************************************************************/
@@ -139,9 +203,19 @@ public class MyDbHelper
 		return mDb.insert(table, null, cv);
 	}
 
+	public long insert(int tblId, String fields[][])
+	{
+		return insert( mDbInfo.TableName(tblId), fields );
+	}
+
 	public int delete(String table, String where, String[] whereValue)
 	{
 		return mDb.delete(table, where, whereValue);
+	}
+
+	public int delete(int tblId, String where, String[] whereValue)
+	{
+		return delete( mDbInfo.TableName(tblId), where, whereValue);
 	}
 
 	public int update(String table, String updateFields[],
@@ -153,6 +227,12 @@ public class MyDbHelper
 			cv.put(updateFields[i], updateValues[i]);
 		}
 		return mDb.update(table, cv, where, whereValue);
+	}
+
+	public int update(int tblId, String fields[],
+			String values[], String where, String[] whereValue)
+	{
+		return update( mDbInfo.TableName(tblId), fields, values, where, whereValue );
 	}
 
 	/****************************************************************

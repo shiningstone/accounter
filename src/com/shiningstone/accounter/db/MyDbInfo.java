@@ -8,51 +8,6 @@ package com.shiningstone.accounter.db;
 import java.util.ArrayList;
 import java.util.List;
 
-class Field {
-	public static final int ID = 0;
-	public static final int NAME = 1;
-	public static final int AMOUNT = 2;
-
-	public String Name;
-	public String Type;
-	
-	public Field(String name,String type) {
-		Name = name;
-		Type = type;
-	}
-};
-
-class Table {
-	public String      Name;
-	public List<Field> Fields = new ArrayList<Field>();
-	
-	public Table(String name) {
-		Name = name;
-		AddField(Field.ID);
-	}
-	
-	public void AddField(String fname,String ftype) {
-		Field f = new Field(fname,ftype);
-		Fields.add( f );
-	}
-	
-	public void AddField(int type) {
-		switch( type ) {
-			case Field.ID:
-				AddField("ID","INTEGER PRIMARY KEY AUTOINCREMENT");
-				break;
-			case Field.NAME:
-				AddField("NAME","TEXT");
-				break;
-			case Field.AMOUNT:
-				AddField("AMOUNT","DOUBLE");
-				break;
-			default:
-				break;
-		}
-	}
-};
-
 public class MyDbInfo {
 	public static Table[] Tables = new Table[12];
 	/**********************************************************
@@ -70,8 +25,24 @@ public class MyDbInfo {
 		return instance;
 	}
 
-	public String TableName(int idx) {
-		return Tables[idx].Name;
+	/**********************************************************
+				SQLITE interface
+	**********************************************************/
+	private String[][] Fields = new String[12][];
+	
+	public String[] FieldNames(int tblIdx) {
+		if( Fields[tblIdx]==null ) {
+			Fields[tblIdx] = new String[Tables[tblIdx].Fields.size()];
+			
+			for( int i=0; i<Fields.length; i++ ) {
+				Fields[tblIdx][i] = Tables[tblIdx].Fields.get(i).Name; 
+			}
+		}
+		return Fields[tblIdx];
+	}
+	
+	public String TableName(int tblIdx) {
+		return Tables[tblIdx].Name;
 	}
 	/**********************************************************
 				private methods
@@ -137,5 +108,50 @@ public class MyDbInfo {
 		Tables[11].AddField("ITEM_ID","INTEGER");
 		Tables[11].AddField("DATE","TEXT");
 		Tables[11].AddField("MEMO","TEXT");
+	}
+}
+
+class Field {
+	public static final int ID = 0;
+	public static final int NAME = 1;
+	public static final int AMOUNT = 2;
+
+	public String Name;
+	public String Type;
+	
+	public Field(String name,String type) {
+		Name = name;
+		Type = type;
+	}
+}
+
+class Table {
+	public String      Name;
+	public List<Field> Fields = new ArrayList<Field>();
+	
+	public Table(String name) {
+		Name = name;
+		AddField(Field.ID);
+	}
+	
+	public void AddField(String fname,String ftype) {
+		Field f = new Field(fname,ftype);
+		Fields.add( f );
+	}
+	
+	public void AddField(int type) {
+		switch( type ) {
+			case Field.ID:
+				AddField("ID","INTEGER PRIMARY KEY AUTOINCREMENT");
+				break;
+			case Field.NAME:
+				AddField("NAME","TEXT");
+				break;
+			case Field.AMOUNT:
+				AddField("AMOUNT","DOUBLE");
+				break;
+			default:
+				break;
+		}
 	}
 }

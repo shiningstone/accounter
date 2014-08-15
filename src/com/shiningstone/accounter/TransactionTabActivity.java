@@ -56,12 +56,7 @@ public class TransactionTabActivity extends Activity implements OnClickListener,
 		ExpenseBtn.setChecked(true);
 		UpdateOptions();
 		
-		ExpenseBtn.setOnCheckedChangeListener(this);
-		CategorySpn.setOnItemSelectedListener(this);
-		SubCateSpn.setOnItemSelectedListener(this);
-		TradeDateBtn.setOnClickListener(this);
-		MemoBtn.setOnClickListener(this);
-		AmountBtn.setOnClickListener(this);
+		StartListen();
 	}
 
 	@Override
@@ -96,11 +91,9 @@ public class TransactionTabActivity extends Activity implements OnClickListener,
 		if( v==AmountBtn ) {
 			UpdateAmount();
 		}
-		
 		if( v==TradeDateBtn ) {
 			UpdateDate();
 		}
-
 		if( v==MemoBtn ) {
 			UpdateMemo();
 		}
@@ -108,6 +101,15 @@ public class TransactionTabActivity extends Activity implements OnClickListener,
 	/**********************************************************
 	 *    private method
 	 **********************************************************/
+	private void StartListen() {
+		ExpenseBtn.setOnCheckedChangeListener(this);
+		CategorySpn.setOnItemSelectedListener(this);
+		SubCateSpn.setOnItemSelectedListener(this);
+		TradeDateBtn.setOnClickListener(this);
+		MemoBtn.setOnClickListener(this);
+		AmountBtn.setOnClickListener(this);
+	}
+	
 	private void UpdateMemo() {
 		MemoText = new EditText(this);
 		MemoText.setLines(5);
