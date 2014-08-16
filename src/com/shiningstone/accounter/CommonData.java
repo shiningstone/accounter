@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.shiningstone.accounter.db.MyDbHelper;
-import com.shiningstone.accounter.db.MyDbInfo;
-
 import android.content.Context;
 import android.database.Cursor;
 
@@ -36,6 +34,9 @@ public class CommonData {
 	public void load(Context context) {
 		LoadCategories();
 		LoadAccounts();
+		LoadBudgets();
+		LoadShops();
+		loadPurposes();
 	}
 
 	/**************************************************
@@ -297,7 +298,7 @@ public class CommonData {
 		R.drawable.icon_yfsp
 	};
 	
-	public void LoadBudget() {
+	public void LoadBudgets() {
 		ArrayList<Integer> ids = new ArrayList<Integer>();
 		ArrayList<String> names = new ArrayList<String>();
 		ArrayList<Double> budgets = new ArrayList<Double>();
@@ -314,7 +315,7 @@ public class CommonData {
 	
 	private void CalcBudget()
 	{
-		Cursor cursor = db.rawQuery("select sum(BUDGET) from TBL_EXPENDITURE_CATEGORY",null);
+		Cursor cursor = db.rawQuery("select sum(BUDGET) from EXPENSE_CATEGORY",null);
 		if (cursor.moveToNext()) {
 			mBudget = cursor.getDouble(0);
 		}
@@ -327,12 +328,12 @@ public class CommonData {
 		CalcBudget();
 	}
 	
-	public void LoadShop() {
+	public void LoadShops() {
 		shop.clear();
 		shop.put(0, "其他");
 	}
 	
-	public void loadPurpose(){
+	public void loadPurposes(){
 		purpose.clear();
 		purpose.put(0, "其他");
 	}

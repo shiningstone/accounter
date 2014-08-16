@@ -9,7 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MyDbInfo {
-	public static Table[] Tables = new Table[12];
+	final static private int TABLE_NUM = 12;
+	public static Table[] Tables = new Table[TABLE_NUM];
 	/**********************************************************
 				Singleton
 	**********************************************************/
@@ -28,13 +29,13 @@ public class MyDbInfo {
 	/**********************************************************
 				SQLITE interface
 	**********************************************************/
-	private String[][] Fields = new String[12][];
+	private String[][] Fields = new String[TABLE_NUM][];
 	
 	public String[] FieldNames(int tblIdx) {
 		if( Fields[tblIdx]==null ) {
 			Fields[tblIdx] = new String[Tables[tblIdx].Fields.size()];
 			
-			for( int i=0; i<Fields.length; i++ ) {
+			for( int i=0; i<Fields[tblIdx].length; i++ ) {
 				Fields[tblIdx][i] = Tables[tblIdx].Fields.get(i).Name; 
 			}
 		}

@@ -9,6 +9,9 @@ public class AccountData extends DbData {
 	String Name;
 	double Balance;
 	
+	public AccountData() {
+	}
+	
 	public AccountData(int id, String name,int type_id,int category, double balance) {
 		Id       = id;
 		TypeId   = type_id;

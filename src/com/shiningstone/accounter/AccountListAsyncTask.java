@@ -1,15 +1,12 @@
 package com.shiningstone.accounter;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
 import android.os.AsyncTask;
-import android.view.View;
 import android.widget.TextView;
 
 public class AccountListAsyncTask extends AsyncTask<AccountActivity, Void, Void> {

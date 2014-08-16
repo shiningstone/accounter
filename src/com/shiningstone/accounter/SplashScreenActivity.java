@@ -16,6 +16,7 @@ public class SplashScreenActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_entrance);
 		DbInit();
+		CommonData.getInstance().load(this);
 		onTouchEvent(null);
 	}
 
@@ -73,13 +74,15 @@ public class SplashScreenActivity extends Activity {
 		
 		for( int subCate=0; subCate<dbStrings.SubCategories[INCOME].length; subCate++ ) {
 			arr = dbStrings.SubCategories[INCOME][subCate];
-			for (int i = 0; i < arr.length; i++) {
-				db.insert("INCOME_SUB_CATEGORY", 
-						new String[][] { 
-							{"NAME",arr[i]}, 
-							{"PARENT_CATEGORY_ID",String.valueOf(subCate)} 
-						}
-				);
+			if( arr!=null ) {
+				for (int i = 0; i < arr.length; i++) {
+					db.insert("INCOME_SUB_CATEGORY", 
+							new String[][] { 
+								{"NAME",arr[i]}, 
+								{"PARENT_CATEGORY_ID",String.valueOf(subCate)} 
+							}
+					);
+				}
 			}
 		}
 		
