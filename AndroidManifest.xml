@@ -27,6 +27,7 @@
         <activity android:name=".TransactionTabActivity" android:screenOrientation="portrait" android:configChanges="keyboardHidden|orientation" />
         <activity android:name=".TransactionNavActivity" android:screenOrientation="portrait" android:configChanges="keyboardHidden|orientation" />
         <activity android:name=".Keypad" android:screenOrientation="portrait" android:configChanges="keyboardHidden|orientation" />
+		<activity android:name=".AccountActivity" android:screenOrientation="portrait" android:configChanges="keyboardHidden|orientation" />
         		
     </application>
 

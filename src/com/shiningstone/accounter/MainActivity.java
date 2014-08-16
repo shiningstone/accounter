@@ -42,6 +42,9 @@ public class MainActivity extends Activity implements OnClickListener {
 			case R.id.month_row_rl:
 				StartTransactionNavActivity(mDate.MonthStart(), mDate.MonthEnd(), TransactionNavActivity.MODE_MONTH);
 				break;
+			case R.id.nav_account_btn:
+				startActivity( new Intent(this, AccountActivity.class) );
+				break;
 		}
 	}
 	
@@ -129,6 +132,7 @@ public class MainActivity extends Activity implements OnClickListener {
 		findViewById(R.id.today_row_rl).setOnClickListener(this);
 		findViewById(R.id.week_row_rl).setOnClickListener(this);
 		findViewById(R.id.month_row_rl).setOnClickListener(this);
+		findViewById(R.id.nav_account_btn).setOnClickListener(this);
 	}
 	
 	private String Transform(Date date,String format){
