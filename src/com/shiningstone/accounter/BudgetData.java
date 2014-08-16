@@ -1,29 +1,25 @@
 
 package com.shiningstone.accounter;
 
+public class BudgetData extends DbData {
+	private final int TABLE_ID = 0;
 
-public class BudgetData implements Cloneable {
-	int    id;
-	int    category;
-	String name;
-	double balance;
-	
-	public BudgetData(){
-	}
+	int    Category;
+	String Name;
+	double Balance;
 	
 	public BudgetData(int id, String name,int category, double balance)	{
-		this.id = id;
-		this.category = category;
-		this.name = name;
-		this.balance = balance;
+		Id = id;
+		Category = category;
+		Name = name;
+		Balance = balance;
 	}
 	
-	public Object clone() {
-		try {
-			return super.clone();
-		} catch (CloneNotSupportedException e) {
-			e.printStackTrace();
-		}
-		return null;
+	public void AddToDb() {
+		
+	}
+	
+	public void UpdateDb() {
+		db.update( TABLE_ID, new String[]{"BUDGET"}, new String[]{ String.valueOf(Balance) }, "ID="+Id, null );
 	}
 }

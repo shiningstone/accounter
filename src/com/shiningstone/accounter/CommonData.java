@@ -44,7 +44,7 @@ public class CommonData {
 	public boolean IsAccountExist(String name)
 	{
 		for ( AccountData adata : mAccount.values() ) {
-			if ( adata.name.equals(name) )
+			if ( adata.Name.equals(name) )
 				return true;
 		}
 		
@@ -53,15 +53,9 @@ public class CommonData {
 	
 	public boolean Add(AccountData data)
 	{
-		data.id = mMaxAccountId + 1;
-		mAccount.put(data.id, data);
-		
-		String fields_values[][] = new String[][] {
-				new String[]{"NAME","TYPE_ID","SUB_TYPE_ID","ACCOUNT_BALANCE"},
-				new String[]{data.name,String.valueOf(data.type_id),String.valueOf(data.category),String.valueOf(data.balance)}
-		};
-		db.insert( 6,fields_values );
-		
+		data.Id = mMaxAccountId + 1;
+		mAccount.put(data.Id, data);
+		data.AddToDb();
 		CalcAcounts();
 
 		return true;
@@ -69,16 +63,8 @@ public class CommonData {
 
 	public void Update(AccountData data)
 	{
-		mAccount.put(data.id, data);
-		
-		String values[] = new String[]{
-				data.name,
-				String.valueOf(data.type_id),
-				String.valueOf(data.category),
-				String.valueOf(data.balance)
-		};
-		db.update( 6, new String[]{"NAME","TYPE_ID","SUB_TYPE_ID","ACCOUNT_BALANCE"}, values, "ID="+data.id , null );
-		
+		mAccount.put(data.Id, data);
+		data.UpdateDb();
 		CalcAcounts();
 	}
 
@@ -94,15 +80,10 @@ public class CommonData {
 	**************************************************/
 	public boolean Add(TransferData data)
 	{
-		String fields_values[][] = new String[][] {
-				new String[]{"AMOUNT","ACCOUNT_ID","ITEM_ID","DATE","MEMO"},
-				new String[]{String.valueOf(data.amount), String.valueOf(data.account_id),
-							String.valueOf(data.item_id), data.date, data.memo}
-		};
-		db.insert( 6,fields_values );
+		data.AddToDb();
 		
-		AccountData account = mAccount.get(data.account_id);
-		account.balance = account.balance + data.amount;
+		AccountData account = mAccount.get(data.Account);
+		account.Balance = account.Balance + data.Amount;
 		Update(account);
 		
 		CalcAcounts();
@@ -341,8 +322,8 @@ public class CommonData {
 	}
 	
 	public void Update( BudgetData data ) {
-		mBudgetData.put( data.id, data );
-		db.update( 0, new String[]{"BUDGET"}, new String[]{String.valueOf(data.balance)}, "ID="+data.id, null );
+		mBudgetData.put( data.Id, data );
+		data.UpdateDb();
 		CalcBudget();
 	}
 	
