@@ -4,6 +4,7 @@
 	android:layout_height="fill_parent" style="@style/common_bg"
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:lineBarView="http://schemas.android.com/apk/res/com.mymoney">
+	
 	<LinearLayout android:orientation="vertical" android:id="@+id/main_ly"
 		android:layout_width="fill_parent" android:layout_height="fill_parent">
 		<TextView android:id="@+id/title_tv" android:text="记账"

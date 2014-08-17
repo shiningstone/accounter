@@ -43,6 +43,9 @@ public class MainActivity extends Activity implements OnClickListener {
 			case R.id.nav_account_btn:
 				startActivity( new Intent(this, AccountActivity.class) );
 				break;
+			case R.id.nav_budget_btn:
+				startActivityForResult( new Intent(this, BudgetActivity.class), 0 ) ;
+				break;
 		}
 	}
 	
@@ -131,6 +134,7 @@ public class MainActivity extends Activity implements OnClickListener {
 		findViewById(R.id.week_row_rl).setOnClickListener(this);
 		findViewById(R.id.month_row_rl).setOnClickListener(this);
 		findViewById(R.id.nav_account_btn).setOnClickListener(this);
+		findViewById(R.id.nav_budget_btn).setOnClickListener(this);
 	}
 	
 	private String Transform(Date date,String format){

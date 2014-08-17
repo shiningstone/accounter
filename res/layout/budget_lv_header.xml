@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<LinearLayout android:orientation="horizontal" android:background="@drawable/main_budget_lv_header"
+	android:layout_width="fill_parent" android:layout_height="wrap_content"
+	xmlns:android="http://schemas.android.com/apk/res/android">
+	<TextView android:text="总计:" android:layout_gravity="center_vertical"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		style="@style/budget_lv_header_text" android:layout_marginLeft="20.0dip"/>
+		
+	<TextView android:id="@+id/budget_amount_tv" android:textStyle="bold" android:layout_gravity="center_vertical"
+		android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip"
+		style="@style/budget_lv_header_text" />
+		
+</LinearLayout>
