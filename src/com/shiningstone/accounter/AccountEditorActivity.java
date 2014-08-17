@@ -82,7 +82,7 @@ public class AccountEditorActivity extends Activity implements OnItemSelectedLis
 				SubTypeSpn.setSelection(SubcateIds.indexOf(init_subcate));
 				init_cate = -1;
 			} else {
-				account.Category = SubcateIds.get(position);
+				account.Subtype = SubcateIds.get(position);
 			}
 		}
 	}
@@ -138,12 +138,12 @@ public class AccountEditorActivity extends Activity implements OnItemSelectedLis
 			SubTypeSpn.setClickable(false);
 			TypeSpn.setClickable(false);
 			
-			if(account.TypeId == 4 || account.TypeId == 5){
+			if(account.Type == 4 || account.Type == 5){
 				AmountEt.setEnabled(false);
 				AmountEt.setInputType(InputType.TYPE_NULL);
 			}
 			
-			AccountSubtype subcat = data.mAccountSubType.get(account.Category);
+			AccountSubtype subcat = data.mAccountSubType.get(account.Subtype);
 			init_cate = subcat.parent;
 			init_subcate = subcat.id;
 		}
@@ -175,8 +175,8 @@ public class AccountEditorActivity extends Activity implements OnItemSelectedLis
 		
 		account.Name = name;
 		account.Balance = balance_d;
-		account.TypeId = account_type_id;
-		account.Category = account_subcategory;
+		account.Type = account_type_id;
+		account.Subtype = account_subcategory;
 		
 		return OK;
 	}

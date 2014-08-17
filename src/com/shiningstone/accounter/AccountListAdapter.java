@@ -45,7 +45,7 @@ public class AccountListAdapter extends BaseAdapter {
 			convertView = inflater.inflate(R.layout.account_listview_data, null);
 			AccountData account = (AccountData)item;
 			
-			String subcatname = data.mAccountSubType.get(account.Category).name;
+			String subcatname = data.mAccountSubType.get(account.Subtype).name;
 			String cost;
 			if (account.Balance >= 0)
 				cost = String.format("$%.2f", account.Balance);

@@ -21,7 +21,6 @@ public class AccountListAsyncTask extends AsyncTask<AccountActivity, Void, Void>
 		employer = params[0];
 		data = CommonData.getInstance();
 
-		
 		GetSortedAccounts( data );
 		
 		Iterator<AccountData> iterator = mAccounts.iterator();
@@ -29,10 +28,11 @@ public class AccountListAsyncTask extends AsyncTask<AccountActivity, Void, Void>
 		while (iterator.hasNext()){
 			AccountData account = iterator.next();
 			
-			int category = data.mAccountSubType.get( account.Category ).parent;
-			if (prev_category == -1 || category != prev_category) {
-				accounts.add( data.mAccountType.get(category).name );
-				prev_category = category;
+			/*int type = data.mAccountSubType.get( account.Subtype ).parent;*/
+			int type = account.Type;
+			if (prev_category == -1 || type != prev_category) {
+				accounts.add( data.mAccountType.get(type).name );
+				prev_category = type;
 			}
 			
 			accounts.add(account);
@@ -43,8 +43,8 @@ public class AccountListAsyncTask extends AsyncTask<AccountActivity, Void, Void>
 
 	@Override
 	protected void onPostExecute(Void result) {
-		((TextView)employer.findViewById(R.id.asset_amount_tv)).setText(String.format("￥.2f", data.mAsset));
-		((TextView)employer.findViewById(R.id.liabilitiy_amount_tv)).setText(String.format("￥.2f", data.mLiability));
+		((TextView)employer.findViewById(R.id.asset_amount_tv)).setText(String.format("%.2f", data.mAsset));
+		((TextView)employer.findViewById(R.id.liabilitiy_amount_tv)).setText(String.format("%.2f", data.mLiability));
 		
 		employer.account_lv.setAdapter(new AccountListAdapter(employer, (ArrayList<Object>)accounts.clone()));
 		employer.account_lv.setSelection(0);
@@ -60,7 +60,7 @@ public class AccountListAsyncTask extends AsyncTask<AccountActivity, Void, Void>
 		Collections.sort( mAccounts, new Comparator<AccountData>(){  
 										@Override
 										public int compare(AccountData object1, AccountData object2) {
-											return String.valueOf(object1.TypeId).compareTo(String.valueOf(object2.TypeId));   
+											return String.valueOf(object1.Type).compareTo(String.valueOf(object2.Type));   
 										}  
         });  
 	}

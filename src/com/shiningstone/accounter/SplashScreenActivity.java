@@ -55,13 +55,13 @@ public class SplashScreenActivity extends Activity {
 			db.insert("EXPENSE_CATEGORY", new String[][] {{"NAME",arr[i]},{"BUDGET","0"}});
 		}
 		
-		for( int subCate=0; subCate<dbStrings.SubCategories[EXPENSE].length; subCate++ ) {
-			arr = dbStrings.SubCategories[EXPENSE][subCate];
+		for( int cate=0; cate<arr.length; cate++ ) {
+			arr = dbStrings.SubCategories[EXPENSE][cate];
 			for (int i = 0; i < arr.length; i++) {
 				db.insert("EXPENSE_SUB_CATEGORY", 
 						new String[][] {
 							{"NAME",arr[i]}, 
-							{"PARENT_CATEGORY_ID",String.valueOf(subCate)} 
+							{"PARENT_CATEGORY_ID",String.valueOf(cate+1)} 
 						}
 				);
 			}
@@ -72,14 +72,14 @@ public class SplashScreenActivity extends Activity {
 			db.insert("INCOME_CATEGORY", new String[][] { {"NAME",arr[i]} } );
 		}
 		
-		for( int subCate=0; subCate<dbStrings.SubCategories[INCOME].length; subCate++ ) {
-			arr = dbStrings.SubCategories[INCOME][subCate];
+		for( int cate=0; cate<arr.length; cate++ ) {
+			arr = dbStrings.SubCategories[INCOME][cate];
 			if( arr!=null ) {
 				for (int i = 0; i < arr.length; i++) {
 					db.insert("INCOME_SUB_CATEGORY", 
 							new String[][] { 
 								{"NAME",arr[i]}, 
-								{"PARENT_CATEGORY_ID",String.valueOf(subCate)} 
+								{"PARENT_CATEGORY_ID",String.valueOf(cate+1)} 
 							}
 					);
 				}
@@ -96,10 +96,10 @@ public class SplashScreenActivity extends Activity {
 			);
 		}
 		
-		for (int subType = 0; subType < dbStrings.AccountSubTypes.length; subType++ ) {
-			arr = dbStrings.AccountSubTypes[subType];
+		for (int type = 0; type < arr.length; type++ ) {
+			arr = dbStrings.AccountSubTypes[type];
 			for (int i = 0; i < arr.length; i++) {
-				db.insert("ACCOUNT_SUB_TYPE", new String[][] { {"NAME",arr[i]}, {"PARENT_TYPE_ID",String.valueOf(subType)} });
+				db.insert("ACCOUNT_SUB_TYPE", new String[][] { {"NAME",arr[i]}, {"PARENT_TYPE_ID",String.valueOf(type+1)} });
 			}
 		}
 		
