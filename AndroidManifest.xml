@@ -30,6 +30,7 @@
 		<activity android:name=".AccountActivity" android:screenOrientation="portrait" android:configChanges="keyboardHidden|orientation" />
         <activity android:name=".AccountEditorActivity" android:screenOrientation="portrait" android:configChanges="keyboardHidden|orientation" />
 		<activity android:name=".BudgetActivity" android:screenOrientation="portrait" android:configChanges="keyboardHidden|orientation" />
+        <activity android:name=".TransferActivity" android:screenOrientation="portrait" android:configChanges="keyboardHidden|orientation" />
     </application>
 
 </manifest>

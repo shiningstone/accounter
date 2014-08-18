@@ -42,6 +42,9 @@ public class AccountActivity extends Activity implements OnClickListener, OnItem
 			intent.putExtra("mode", AccountEditorActivity.CREATE);
 		    startActivityForResult(intent, 0);
 			break;
+		case R.id.go_to_transfer_btn:
+		    startActivityForResult(new Intent(this, TransferActivity.class), 0);
+			break;
 		}
 	}
 

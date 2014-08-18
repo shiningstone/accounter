@@ -7,6 +7,9 @@ public class TransferData extends DbData {
 	String Date;
 	String Memo;
 	
+	public TransferData() {
+	}
+
 	public TransferData(int id, double amount,int account_id,int item_id, String date,String memo)
 	{
 		Id = id;
