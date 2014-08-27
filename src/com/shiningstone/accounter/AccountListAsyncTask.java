@@ -13,30 +13,16 @@ public class AccountListAsyncTask extends AsyncTask<AccountActivity, Void, Void>
 
 	AccountActivity employer;
 	CommonData data;
-	ArrayList<Object> accounts = new ArrayList<Object>();
-	List<AccountData> mAccounts = new ArrayList<AccountData>();
+	ArrayList<Object> mAccounts = new ArrayList<Object>();
 	
 	@Override
 	protected Void doInBackground(AccountActivity... params) {
 		employer = params[0];
 		data = CommonData.getInstance();
 
-		GetSortedAccounts( data );
-		
-		Iterator<AccountData> iterator = mAccounts.iterator();
-		int prev_category = -1;
-		while (iterator.hasNext()){
-			AccountData account = iterator.next();
-			
-			/*int type = data.mAccountSubType.get( account.Subtype ).parent;*/
-			int type = account.Type;
-			if (prev_category == -1 || type != prev_category) {
-				accounts.add( data.mAccountType.get(type).name );
-				prev_category = type;
-			}
-			
-			accounts.add(account);
-		}
+		List<AccountData> accountList = new ArrayList<AccountData>();
+		GetSortedAccounts( data,accountList );
+		LoadListItems( accountList );
 		
 		return null;
 	}
@@ -46,22 +32,40 @@ public class AccountListAsyncTask extends AsyncTask<AccountActivity, Void, Void>
 		((TextView)employer.findViewById(R.id.asset_amount_tv)).setText(String.format("%.2f", data.mAsset));
 		((TextView)employer.findViewById(R.id.liabilitiy_amount_tv)).setText(String.format("%.2f", data.mLiability));
 		
-		employer.account_lv.setAdapter(new AccountListAdapter(employer, (ArrayList<Object>)accounts.clone()));
+		employer.account_lv.setAdapter(new AccountListAdapter(employer, (ArrayList<Object>)mAccounts.clone()));
 		employer.account_lv.setSelection(0);
 		super.onPostExecute(result);
 	}
 
-	private void GetSortedAccounts(CommonData data) {
+	private void GetSortedAccounts( CommonData data, List<AccountData> accountList ) {
 		Iterator<AccountData> iterator = data.mAccount.values().iterator();
 		while (iterator.hasNext()){
-			mAccounts.add( iterator.next() );
+			accountList.add( iterator.next() );
 		}
 		
-		Collections.sort( mAccounts, new Comparator<AccountData>(){  
-										@Override
-										public int compare(AccountData object1, AccountData object2) {
-											return String.valueOf(object1.Type).compareTo(String.valueOf(object2.Type));   
-										}  
-        });  
+		Collections.sort( accountList, new Comparator<AccountData>(){  
+											@Override
+											public int compare(AccountData object1, AccountData object2) {
+												return String.valueOf(object1.Type).compareTo(String.valueOf(object2.Type));   
+											}  
+										}
+		);  
+	}
+	
+	private void LoadListItems( List<AccountData> accountList ) {
+		int cur_type = -1;
+
+		Iterator<AccountData> iterator = accountList.iterator();
+		while (iterator.hasNext()){
+			AccountData account = iterator.next();
+			
+			int type = account.Type;
+			if ( cur_type == -1 || type != cur_type ) {
+				mAccounts.add( data.mAccountType.get(type).name );
+				cur_type = type;
+			}
+			
+			mAccounts.add(account);
+		}
 	}
 }

@@ -100,7 +100,6 @@ public class CheckedListItem extends RelativeLayout implements Checkable
 
 	@Override
 	public void setPadding(int left, int top, int right, int bottom) {
-		// TODO Auto-generated method stub
 		super.setPadding(left, top, right, bottom);
 		
 		paddingright = right;

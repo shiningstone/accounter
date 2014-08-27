@@ -10,41 +10,40 @@ import android.view.View;
 import android.widget.TextView;
 
 public class BudgetListAsyncTask extends AsyncTask<BudgetActivity, Void, Void> {
-
-	BudgetActivity budget_activity;
-	
-	CommonData commondata;
-	ArrayList<Object> budgets = new ArrayList<Object>();
+	CommonData        commondata;
+	BudgetActivity    mEmployer;
+	ArrayList<Object> mBudgets = new ArrayList<Object>();
 
 	@Override
 	protected Void doInBackground(BudgetActivity... params) {
-		budget_activity = params[0];
+		mEmployer = params[0];
 		commondata = CommonData.getInstance();
 		
 		Iterator<BudgetData> iterator = commondata.mBudgetData.values().iterator();
 		while (iterator.hasNext()){
 			BudgetData data = iterator.next();
-			budgets.add(data);
+			mBudgets.add(data);
 		}
 		return null;
 	}
 
 	@Override
 	protected void onPostExecute(Void result) {
-		budget_activity.findViewById(R.id.listview_loading_tv).setVisibility(View.GONE);
+		mEmployer.findViewById(R.id.listview_loading_tv).setVisibility(View.GONE);
 		
-		if (budgets.size() == 0){
-			budget_activity.findViewById(R.id.lv_empty_iv).setVisibility(View.VISIBLE);
-			budget_activity.findViewById(R.id.header_empty_iv).setVisibility(View.GONE);
+		if (mBudgets.size() == 0){
+			mEmployer.findViewById(R.id.lv_empty_iv).setVisibility(View.VISIBLE);
+			mEmployer.findViewById(R.id.header_empty_iv).setVisibility(View.GONE);
 		}
 		else{
-			budget_activity.findViewById(R.id.lv_empty_iv).setVisibility(View.GONE);
-			budget_activity.findViewById(R.id.header_empty_iv).setVisibility(View.VISIBLE);
+			mEmployer.findViewById(R.id.lv_empty_iv).setVisibility(View.GONE);
+			mEmployer.findViewById(R.id.header_empty_iv).setVisibility(View.VISIBLE);
 		}
 		
-		((TextView)budget_activity.findViewById(R.id.budget_amount_tv)).setText(String.format("￥%.2f", commondata.mBudget));
-		budget_activity.budget_lv.setAdapter(new BudgetListAdapter(budget_activity,(ArrayList<Object>)budgets.clone()));
-		budget_activity.budget_lv.setSelection(0);
+		((TextView)mEmployer.findViewById(R.id.budget_amount_tv)).setText(String.format("¥ %.2f", commondata.mBudget));
+		mEmployer.budget_lv.setAdapter(new BudgetListAdapter(mEmployer,(ArrayList<Object>)mBudgets.clone()));
+		mEmployer.budget_lv.setSelection(0);
+		
 		super.onPostExecute(result);
 	}
 

@@ -41,29 +41,37 @@ public class AccountListAdapter extends BaseAdapter {
 	public View getView(int position, View convertView, ViewGroup parent) {
 		Object item = accounts.get(position);
 		
-		if (item.getClass() == AccountData.class) {
-			convertView = inflater.inflate(R.layout.account_listview_data, null);
-			AccountData account = (AccountData)item;
-			
-			String subcatname = data.mAccountSubType.get(account.Subtype).name;
-			String cost;
-			if (account.Balance >= 0)
-				cost = String.format("$%.2f", account.Balance);
-			else
-				cost = String.format("-$%.2f", -account.Balance);
-			
-			((TextView)convertView.findViewById(R.id.account_name_tv)).setText(account.Name);
-			((TextView)convertView.findViewById(R.id.second_level_account_group_name_tv)).setText(subcatname);
-			((TextView)convertView.findViewById(R.id.account_balance_tv)).setText(cost);
-			
-			convertView.setTag(account);
+		if (item.getClass() != AccountData.class) {
+			ShowType( item,convertView );
 		} else {
-			convertView = inflater.inflate(R.layout.account_listview_title, null);
-			TextView title = (TextView)convertView.findViewById(R.id.list_header_title);
-			title.setText(item.toString());
+			ShowAccount( item,convertView );
 		}
 
 		return convertView;
 	}
 
+	void ShowAccount( Object item, View convertView ) {
+		convertView = inflater.inflate(R.layout.account_listview_data, null);
+		AccountData account = (AccountData)item;
+		
+		String subcatname = data.mAccountSubType.get(account.Subtype).name;
+		String cost;
+		if (account.Balance >= 0)
+			cost = String.format("$%.2f", account.Balance);
+		else
+			cost = String.format("-$%.2f", -account.Balance);
+		
+		((TextView)convertView.findViewById(R.id.account_name_tv)).setText(account.Name);
+		((TextView)convertView.findViewById(R.id.second_level_account_group_name_tv)).setText(subcatname);
+		((TextView)convertView.findViewById(R.id.account_balance_tv)).setText(cost);
+		
+		convertView.setTag(account);
+	}
+	
+	void ShowType( Object item, View convertView ) {
+		convertView = inflater.inflate(R.layout.account_listview_title, null);
+
+		TextView title = (TextView)convertView.findViewById(R.id.list_header_title);
+		title.setText(item.toString());
+	}
 }

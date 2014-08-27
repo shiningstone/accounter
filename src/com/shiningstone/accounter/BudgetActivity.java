@@ -25,8 +25,7 @@ public class BudgetActivity extends Activity implements OnItemClickListener{
 	ListView budget_lv;
 	
 	private View empty_tips;
-	private String  mValue="0";
-	private int editId = -1;
+	private int mSelectedBudget = -1;
 	CommonData commondata = CommonData.getInstance();
 	
 	@Override
@@ -44,50 +43,51 @@ public class BudgetActivity extends Activity implements OnItemClickListener{
 		Refresh();
 	}
 	
+	/* reaction of keypad */
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		
 		if (resultCode == RESULT_OK){
 			Bundle extras = data.getExtras(); 
-			mValue = extras.getString("value"); 
 			Refresh();
-			Update();
+			UpdateSelectedBudget( extras.getString("value") );
 		}
 	}
 	
-	public void Update() {
-		if(editId != -1){
-			BudgetData bData = commondata.mBudgetData.get(editId);
-			bData.Balance = Double.valueOf(mValue);
-			commondata.Update(bData);
-			Toast.makeText(this, getString(R.string.budget_ok), 0).show();
-			editId = -1;
-		}
-		
-	}
-	
-	public void Refresh() {
+	private void Refresh() {
 		new BudgetListAsyncTask().execute(this);
 	}
 
+	private void UpdateSelectedBudget( String balance ) {
+		if(mSelectedBudget != -1){
+			BudgetData budget = commondata.mBudgetData.get( mSelectedBudget );
+			budget.Balance = Double.valueOf( balance );
+			commondata.Update( budget );
+			
+			mSelectedBudget = -1;
+
+			Toast.makeText(this, getString(R.string.budget_ok), 0).show();
+		}
+	}
+	
 	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
-		// TODO Auto-generated method stub
 		BudgetData data = (BudgetData)view.getTag();
-		if( data.Balance>0 ){
-			mValue = String.valueOf(data.Balance);
-		}
 		
-		editId = data.Id;
-		Intent i=new Intent(this,Keypad.class);
-		i.putExtra("value", mValue);
-		startActivityForResult(i, 0);
+		mSelectedBudget = data.Id;
+		StartKeyPad( data.Balance );
 	}
 	
 	public void onBackPressed() {
 		setResult(RESULT_OK, this.getIntent());
 		finish();
+	}
+	
+	private void StartKeyPad(double initValue) {
+		Intent i=new Intent(this,Keypad.class);
+		i.putExtra( "value", String.valueOf(initValue) );
+		startActivityForResult(i, 0);
 	}
 }

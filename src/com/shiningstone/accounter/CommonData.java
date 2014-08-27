@@ -163,7 +163,6 @@ public class CommonData {
 	public double mAsset, mLiability;
 	private int mMaxAccountId = 0;
 	
-	
 	public HashMap<Integer, String> shop = new HashMap<Integer, String>();
 	public HashMap<Integer, String> purpose = new HashMap<Integer, String>();
 	
@@ -276,14 +275,6 @@ public class CommonData {
 
 	public HashMap<Integer, BudgetData> mBudgetData = new HashMap<Integer, BudgetData>();
 	public double mBudget;
-	public int[] BUDGET_BAR = {
-		R.drawable.widget_progress_bg_left,
-		R.drawable.widget_progress_bg_middle,
-		R.drawable.widget_progress_bg_right,
-		R.drawable.widget_progress_red_left,
-		R.drawable.widget_progress_red_middle,
-		R.drawable.widget_progress_red_right,
-	};
 	public int[] BUDGET_ICONS = {
 		R.drawable.icon_qtzx,
 		R.drawable.icon_jrbx,
