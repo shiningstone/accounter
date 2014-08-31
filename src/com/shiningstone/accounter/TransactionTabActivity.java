@@ -39,12 +39,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class TransactionTabActivity extends Activity implements OnClickListener,OnCheckedChangeListener,OnItemSelectedListener {
-	final static int INCOME_MODE = 0;
-	final static int PAYOUT_MODE = 1;
 	final static int EDIT_MODE = 2;
 	
 	private String[] TITLES = null;
-	private int mMode = 0;
 	private Calendar calendar = Calendar.getInstance();
 	private MyDbHelper mDb = null;
 	private MyDbInfo mDbInfo = null;
@@ -59,7 +56,7 @@ public class TransactionTabActivity extends Activity implements OnClickListener,
 		mDbInfo = MyDbInfo.getInstance();
 
 		Intent intent = getIntent();
-		mMode = intent.getIntExtra("mode", 1);
+		CashFlowOption = intent.getIntExtra("mode", 1);
 
 		LoadDbStrings();
 		LoadResources();
@@ -131,8 +128,8 @@ public class TransactionTabActivity extends Activity implements OnClickListener,
 	private int mSubTypeId = 0;
 	
 	private void InitData() {
-		if(mMode == EDIT_MODE){
-			if( mTransaction.type==PAYOUT_MODE )
+		if(CashFlowOption == EDIT_MODE){
+			if( mTransaction.type==EXPENSE )
 			{
 				StoreFrm.setVisibility(View.VISIBLE);
 				EmptyFrm.setVisibility(View.GONE);
@@ -162,7 +159,7 @@ public class TransactionTabActivity extends Activity implements OnClickListener,
 	}
 	
 	private String GetSelectiveString(int mode) {
-		if ( mode==INCOME_MODE || mode==EDIT_MODE && mTransaction.type==INCOME_MODE ) {
+		if ( mode==INCOME || mode==EDIT_MODE && mTransaction.type==INCOME ) {
 			return "=0";
 		} else {
 			return "<>1";
@@ -170,7 +167,7 @@ public class TransactionTabActivity extends Activity implements OnClickListener,
 	}
 	
 	private int GetId(int mode) {
-		if ( mode==INCOME_MODE || mode==EDIT_MODE && mTransaction.type==INCOME_MODE ) {
+		if ( mode==INCOME || mode==EDIT_MODE && mTransaction.type==INCOME ) {
 			return TBL_INCOME_CATE;
 		} else {
 			return TBL_EXPENSE_CATE;
@@ -178,7 +175,7 @@ public class TransactionTabActivity extends Activity implements OnClickListener,
 	}
 	
 	private int GetSubId(int mode) {
-		if ( mode==INCOME_MODE || mode==EDIT_MODE && mTransaction.type==INCOME_MODE ) {
+		if ( mode==INCOME || mode==EDIT_MODE && mTransaction.type==INCOME ) {
 			return TBL_INCOME_SUBCATE;
 		} else {
 			return TBL_EXPENSE_SUBCATE;
@@ -188,15 +185,15 @@ public class TransactionTabActivity extends Activity implements OnClickListener,
 	private void updateInfo(int position){
 		if( position < 0 ) {
 			LoadAccounts();
-			CategorySpn.setAdapter( GetItemsAdapter( GetId(mMode) ) );
+			CategorySpn.setAdapter( GetItemsAdapter( GetId(CashFlowOption) ) );
 			position = 0;
 		}
 		
-		LoadSubCategoriesSpinner( GetSubId(mMode),position );
+		LoadSubCategoriesSpinner( GetSubId(CashFlowOption),position );
 	}
 	
 	private String[] GetAccountValues(int mode) {
-		if (mode==PAYOUT_MODE || (mode==EDIT_MODE && mTransaction.type==PAYOUT_MODE)) {
+		if (mode==EXPENSE || (mode==EDIT_MODE && mTransaction.type==EXPENSE)) {
 			return new String[]{
 					mValue,
 					String.valueOf( CategorySpn.getSelectedItemPosition()+1 ),
@@ -221,7 +218,7 @@ public class TransactionTabActivity extends Activity implements OnClickListener,
 	}
 	
 	private int GetFlowId(int mode) {
-		if (mode==PAYOUT_MODE || (mode==EDIT_MODE && mTransaction.type==PAYOUT_MODE)) {
+		if (mode==EXPENSE || (mode==EDIT_MODE && mTransaction.type==EXPENSE)) {
 			return TBL_EXPENSE;
 		} else {
 			return TBL_INCOME;
@@ -234,14 +231,14 @@ public class TransactionTabActivity extends Activity implements OnClickListener,
 			return;
 		}
 		
-		int tableId = GetFlowId(mMode);
-		String[] values = GetAccountValues(mMode);
-		updataAccount(mMode);
+		int tableId = GetFlowId(CashFlowOption);
+		String[] values = GetAccountValues(CashFlowOption);
+		updataAccount(CashFlowOption);
 
 		String[] fields = new String[mDbInfo.FieldNames(tableId).length-1];
 		System.arraycopy(mDbInfo.FieldNames(tableId),1,fields,0,mDbInfo.FieldNames(tableId).length-1);
 		
-		if(mMode == EDIT_MODE){
+		if(CashFlowOption == EDIT_MODE){
 			mDb.update( mDbInfo.TableName(tableId), fields, values, "ID=" + mTransaction.infoId, null);
 			Toast.makeText(getApplicationContext(), getString(R.string.edit_message),Toast.LENGTH_SHORT).show();
 		}else{
@@ -258,10 +255,10 @@ public class TransactionTabActivity extends Activity implements OnClickListener,
 			AccountData account = iteratorSort.next();
 			if( account.Id == Integer.parseInt(mAccountId[AccountSpn.getSelectedItemPosition()]) )
 			{
-				if(mode == INCOME_MODE){
+				if(mode == INCOME){
 					account.Balance = account.Balance+Double.parseDouble(mValue);
 					data.Update(account);
-				}else if(mode == PAYOUT_MODE){
+				}else if(mode == EXPENSE){
 					account.Balance = account.Balance-Double.parseDouble(mValue);
 					data.Update(account);
 				}
@@ -271,7 +268,7 @@ public class TransactionTabActivity extends Activity implements OnClickListener,
 	}
 	
 	private void Exit() {
-		if( mMode != EDIT_MODE ) {
+		if( CashFlowOption != EDIT_MODE ) {
 			Intent intent = new Intent(TransactionTabActivity.this,MainActivity.class);
 			startActivity(intent);
 			finish();
@@ -285,7 +282,7 @@ public class TransactionTabActivity extends Activity implements OnClickListener,
 		ArrayAdapter<String> adapter;
 		List<String> list = new ArrayList<String>();
 
-		String strWhere = GetSelectiveString( mMode );
+		String strWhere = GetSelectiveString( CashFlowOption );
 		Cursor cursor = mDb.select( mDbInfo.TableName(6), mDbInfo.FieldNames(6), 
 					"(select POSTIVE from ACCOUNT_TYPE where ID=" + mDbInfo.FieldNames(6)[2] + ")" + strWhere, null, null, null, null);
 
