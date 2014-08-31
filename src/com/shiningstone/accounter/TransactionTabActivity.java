@@ -6,8 +6,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
+import com.shiningstone.accounter.db.MyDbHelper;
+import com.shiningstone.accounter.db.MyDbInfo;
 import com.shiningstone.accounter.db.MyDbValue;
 
 import android.app.Activity;
@@ -16,6 +19,7 @@ import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -29,7 +33,10 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
 
 public class TransactionTabActivity extends Activity implements OnClickListener,OnCheckedChangeListener,OnItemSelectedListener {
 	final static int INCOME_MODE = 0;
@@ -39,12 +46,18 @@ public class TransactionTabActivity extends Activity implements OnClickListener,
 	private String[] TITLES = null;
 	private int mMode = 0;
 	private Calendar calendar = Calendar.getInstance();
+	private MyDbHelper mDb = null;
+	private MyDbInfo mDbInfo = null;
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.transaction_tab_activity);
 
 		TITLES = new String[]{getString(R.string.edit_income),getString(R.string.edit_expense)};
+		mDb = SplashScreenActivity.db;
+		mDbInfo = MyDbInfo.getInstance();
+
 		Intent intent = getIntent();
 		mMode = intent.getIntExtra("mode", 1);
 
@@ -56,14 +69,16 @@ public class TransactionTabActivity extends Activity implements OnClickListener,
 		UpdateOptions();
 		
 		StartListen();
+		
+		InitData();
 	}
 
 	@Override
 	protected void onActivityResult(int requestCode,int resultCode,Intent data) {
 		if(requestCode==0 && resultCode==Activity.RESULT_OK) {
 			Bundle extras = data.getExtras();
-			String value = extras.getString("value");
-			AmountBtn.setText(DecimalFormat.getCurrencyInstance().format(Double.parseDouble(value)));
+			mValue = extras.getString("value");
+			AmountBtn.setText( DecimalFormat.getCurrencyInstance().format(Double.parseDouble(mValue)) );
 		}
 	}
 	
@@ -96,10 +111,223 @@ public class TransactionTabActivity extends Activity implements OnClickListener,
 		if( v==MemoBtn ) {
 			UpdateMemo();
 		}
+		if(v == SaveBtn){
+			Save();
+		}
+		if(v == CancelBtn){
+			Exit();
+		}
+	}
+
+	public void onBackPressed() {
+		Exit();
 	}
 	/**********************************************************
 	 *    private method
 	 **********************************************************/
+	private String mValue = "0";
+	TransactionData mTransaction;
+	private String[] mAccountId = null;
+	private int mSubTypeId = 0;
+	
+	private void InitData() {
+		if(mMode == EDIT_MODE){
+			if( mTransaction.type==PAYOUT_MODE )
+			{
+				StoreFrm.setVisibility(View.VISIBLE);
+				EmptyFrm.setVisibility(View.GONE);
+			}else
+			{
+				StoreFrm.setVisibility(View.GONE);
+				EmptyFrm.setVisibility(View.VISIBLE);
+			}
+			
+			TypeRBtn.setVisibility(View.GONE);
+			TitleText.setVisibility(View.VISIBLE);
+			TitleText.setText( TITLES[mTransaction.type] );
+			AmountBtn.setText(DecimalFormat.getCurrencyInstance().format(mTransaction.amount));
+
+			mValue = String.valueOf(String.format("%.2f", mTransaction.amount));
+			TradeDateBtn.setText(mTransaction.date);
+			calendar.set(Integer.valueOf(mTransaction.date.substring(0, 4)), Integer.valueOf(mTransaction.date.substring(5, 7))-1, Integer.valueOf(mTransaction.date.substring(8, 10)));
+			MemoBtn.setText(mTransaction.memo);
+		}else{
+			TradeDateBtn.setText(format(calendar.getTime()));
+		}
+		
+		StoreSpn.setAdapter( GetItemsAdapter(7) );
+		ItemSpn.setAdapter( GetItemsAdapter(8) );
+		
+		updateInfo(-1);
+	}
+	
+	private String GetSelectiveString(int mode) {
+		if ( mode==INCOME_MODE || mode==EDIT_MODE && mTransaction.type==INCOME_MODE ) {
+			return "=0";
+		} else {
+			return "<>1";
+		}
+	}
+	
+	private int GetId(int mode) {
+		if ( mode==INCOME_MODE || mode==EDIT_MODE && mTransaction.type==INCOME_MODE ) {
+			return TBL_INCOME_CATE;
+		} else {
+			return TBL_EXPENSE_CATE;
+		}
+	}
+	
+	private int GetSubId(int mode) {
+		if ( mode==INCOME_MODE || mode==EDIT_MODE && mTransaction.type==INCOME_MODE ) {
+			return TBL_INCOME_SUBCATE;
+		} else {
+			return TBL_EXPENSE_SUBCATE;
+		}
+	}
+	
+	private void updateInfo(int position){
+		if( position < 0 ) {
+			LoadAccounts();
+			CategorySpn.setAdapter( GetItemsAdapter( GetId(mMode) ) );
+			position = 0;
+		}
+		
+		LoadSubCategoriesSpinner( GetSubId(mMode),position );
+	}
+	
+	private String[] GetAccountValues(int mode) {
+		if (mode==PAYOUT_MODE || (mode==EDIT_MODE && mTransaction.type==PAYOUT_MODE)) {
+			return new String[]{
+					mValue,
+					String.valueOf( CategorySpn.getSelectedItemPosition()+1 ),
+					String.valueOf( SubCateSpn.getSelectedItemPosition()+mSubTypeId ),
+					mAccountId[AccountSpn.getSelectedItemPosition()],
+					String.valueOf( StoreSpn.getSelectedItemPosition()+1 ),
+					String.valueOf( ItemSpn.getSelectedItemPosition()+1 ),
+					TradeDateBtn.getText().toString(),
+					MemoBtn.getText().toString()
+			};
+		} else {
+			return new String[]{
+					mValue,
+					String.valueOf( CategorySpn.getSelectedItemPosition()+1 ),
+					String.valueOf( SubCateSpn.getSelectedItemPosition()+mSubTypeId ),
+					mAccountId[AccountSpn.getSelectedItemPosition()],
+					String.valueOf( ItemSpn.getSelectedItemPosition()+1 ),
+					TradeDateBtn.getText().toString(),
+					MemoBtn.getText().toString()
+			};
+		}
+	}
+	
+	private int GetFlowId(int mode) {
+		if (mode==PAYOUT_MODE || (mode==EDIT_MODE && mTransaction.type==PAYOUT_MODE)) {
+			return TBL_EXPENSE;
+		} else {
+			return TBL_INCOME;
+		}
+	}
+	
+	private void Save() {
+		if( mValue.equals("") || mValue == null || Double.parseDouble(mValue) <= 0 ){
+			Toast.makeText( getApplicationContext(), getString(R.string.input_message),Toast.LENGTH_SHORT ).show();
+			return;
+		}
+		
+		int tableId = GetFlowId(mMode);
+		String[] values = GetAccountValues(mMode);
+		updataAccount(mMode);
+
+		String[] fields = new String[mDbInfo.FieldNames(tableId).length-1];
+		System.arraycopy(mDbInfo.FieldNames(tableId),1,fields,0,mDbInfo.FieldNames(tableId).length-1);
+		
+		if(mMode == EDIT_MODE){
+			mDb.update( mDbInfo.TableName(tableId), fields, values, "ID=" + mTransaction.infoId, null);
+			Toast.makeText(getApplicationContext(), getString(R.string.edit_message),Toast.LENGTH_SHORT).show();
+		}else{
+			mDb.insert( mDbInfo.TableName(tableId), fields, values );
+			Toast.makeText(getApplicationContext(), getString(R.string.save_message),Toast.LENGTH_SHORT).show();
+		}
+		Exit();
+	}
+	
+	private void updataAccount(int mode){
+		CommonData data = CommonData.getInstance();
+		Iterator<AccountData> iteratorSort = data.mAccount.values().iterator();
+		while (iteratorSort.hasNext()){
+			AccountData account = iteratorSort.next();
+			if( account.Id == Integer.parseInt(mAccountId[AccountSpn.getSelectedItemPosition()]) )
+			{
+				if(mode == INCOME_MODE){
+					account.Balance = account.Balance+Double.parseDouble(mValue);
+					data.Update(account);
+				}else if(mode == PAYOUT_MODE){
+					account.Balance = account.Balance-Double.parseDouble(mValue);
+					data.Update(account);
+				}
+				return;
+			}
+		}
+	}
+	
+	private void Exit() {
+		if( mMode != EDIT_MODE ) {
+			Intent intent = new Intent(TransactionTabActivity.this,MainActivity.class);
+			startActivity(intent);
+			finish();
+		}else{
+			this.setResult( RESULT_OK, getIntent() );  
+            this.finish();  
+		}
+	}
+	
+	private void LoadAccounts() {
+		ArrayAdapter<String> adapter;
+		List<String> list = new ArrayList<String>();
+
+		String strWhere = GetSelectiveString( mMode );
+		Cursor cursor = mDb.select( mDbInfo.TableName(6), mDbInfo.FieldNames(6), 
+					"(select POSTIVE from ACCOUNT_TYPE where ID=" + mDbInfo.FieldNames(6)[2] + ")" + strWhere, null, null, null, null);
+
+		mAccountId = new String[cursor.getCount()];
+		int account_num = 0;
+		while (cursor.moveToNext()) {
+			mAccountId[account_num] = cursor.getString(0);
+			list.add( cursor.getString(1) );
+			account_num++;
+		}
+		
+		adapter = new ArrayAdapter<String>( this, android.R.layout.simple_spinner_item, list );
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		AccountSpn.setAdapter( adapter );
+	}
+	
+	private ArrayAdapter<String> LoadAdapter(Cursor cursor) {
+		List<String> list = new ArrayList<String>();
+		while (cursor.moveToNext()) {
+			list.add(cursor.getString(1));
+		}
+		
+		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, list);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		return adapter;
+	}
+	
+	private void LoadSubCategoriesSpinner( int id,int position ) {
+		Cursor cursor = mDb.select(mDbInfo.TableName(id), mDbInfo.FieldNames(id), 
+				mDbInfo.FieldNames(id)[2] + "=?", new String[]{String.valueOf(position + 1)}, null, null, null);
+		SubCateSpn.setAdapter( LoadAdapter(cursor) );
+		cursor.close();
+	}
+
+	private ArrayAdapter<String> GetItemsAdapter( int id ) {
+		Cursor cursor = mDb.select( mDbInfo.TableName(id), mDbInfo.FieldNames(id), null, null, null, null, null);
+		ArrayAdapter<String> adapter = LoadAdapter(cursor);
+		cursor.close();
+		
+		return adapter;
+	}
+	
 	private void StartListen() {
 		ExpenseBtn.setOnCheckedChangeListener(this);
 		CategorySpn.setOnItemSelectedListener(this);
@@ -107,6 +335,8 @@ public class TransactionTabActivity extends Activity implements OnClickListener,
 		TradeDateBtn.setOnClickListener(this);
 		MemoBtn.setOnClickListener(this);
 		AmountBtn.setOnClickListener(this);
+		SaveBtn.setOnClickListener(this);
+		CancelBtn.setOnClickListener(this);
 	}
 	
 	private void UpdateMemo() {
@@ -217,6 +447,12 @@ public class TransactionTabActivity extends Activity implements OnClickListener,
 	
 	private EditText MemoText = null;
 	
+	private Button SaveBtn = null;
+	private Button CancelBtn = null;
+	
+	private RadioGroup TypeRBtn = null;
+	private TextView TitleText = null;
+	
 	private void LoadDbStrings() {
 		mDbStrings = MyDbValue.getInstance( this.getApplicationContext() );
 	}
@@ -236,5 +472,17 @@ public class TransactionTabActivity extends Activity implements OnClickListener,
 		MemoBtn = (Button) findViewById(R.id.memo_btn);
 		StoreFrm = (FrameLayout)findViewById(R.id.corporation_fl);
 		EmptyFrm = (FrameLayout)findViewById(R.id.empty_fl);
+		SaveBtn = (Button) findViewById(R.id.save_btn);
+		CancelBtn = (Button) findViewById(R.id.cancel_btn);
+		
+		TypeRBtn = (RadioGroup) findViewById(R.id.trans_type_tab_rg);
+		TitleText = (TextView) findViewById(R.id.title_tv);
 	}
+	
+	private final int TBL_EXPENSE_CATE     = 0;
+	private final int TBL_EXPENSE_SUBCATE  = 1;
+	private final int TBL_INCOME_CATE      = 2;
+	private final int TBL_INCOME_SUBCATE   = 3;
+	private final int TBL_EXPENSE          = 9;
+	private final int TBL_INCOME           = 10;
 }

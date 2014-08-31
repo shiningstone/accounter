@@ -203,6 +203,14 @@ public class MyDbHelper
 		return mDb.insert(table, null, cv);
 	}
 
+	public long insert(String table, String[] fields, String[] values ) {
+		ContentValues cv = new ContentValues();
+		for (int i = 0; i < fields.length; i++) {
+			cv.put(fields[i], values[i]);
+		}
+		return mDb.insert(table, null, cv);
+	}
+	
 	public long insert(int tblId, String fields[][])
 	{
 		return insert( mDbInfo.TableName(tblId), fields );
