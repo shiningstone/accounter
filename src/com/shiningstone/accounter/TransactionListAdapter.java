@@ -37,7 +37,7 @@ public class TransactionListAdapter extends BaseAdapter {
 			String name = "temp";
 			if(transaction.type == 0){
 				icon = commondata.mCat.get("in" + transaction.category).icon;
-				name = commondata.mSubCat.get("in" + transaction.subcategory+1).name;
+				name = commondata.mSubCat.get("in" + (transaction.subcategory+1)).name;
 			}else{
 				icon = commondata.mCat.get("out" + transaction.category).icon;
 				name = commondata.mSubCat.get("out" + (transaction.subcategory+1)).name;
