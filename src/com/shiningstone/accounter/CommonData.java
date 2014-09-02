@@ -7,6 +7,7 @@ import java.util.HashMap;
 import com.shiningstone.accounter.db.MyDbHelper;
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 
 public class CommonData {
 	/***********************************************************
@@ -275,19 +276,6 @@ public class CommonData {
 
 	public HashMap<Integer, BudgetData> mBudgetData = new HashMap<Integer, BudgetData>();
 	public double mBudget;
-	public int[] BUDGET_ICONS = {
-		R.drawable.icon_qtzx,
-		R.drawable.icon_jrbx,
-		R.drawable.icon_ylbj,
-		R.drawable.icon_rqwl,
-		R.drawable.icon_xxjx,
-		R.drawable.icon_xxyl,
-		R.drawable.icon_jltx,
-		R.drawable.icon_xcjt,
-		R.drawable.icon_jjwy,
-		R.drawable.icon_spjs,
-		R.drawable.icon_yfsp
-	};
 	
 	public void LoadBudgets() {
 		ArrayList<Integer> ids = new ArrayList<Integer>();
@@ -298,7 +286,7 @@ public class CommonData {
 
 		db.LoadIdBudget( ids,names,budgets,0 );
 		for( int i=0; i<ids.size(); i++ ) {
-			mBudgetData.put( ids.get(i), new BudgetData(ids.get(i), names.get(i), BUDGET_ICONS[i], budgets.get(i)) );
+			mBudgetData.put( ids.get(i), new BudgetData(ids.get(i), names.get(i), i+1, budgets.get(i)) );
 		}
 		
 		CalcBudget();
@@ -317,6 +305,19 @@ public class CommonData {
 		mBudgetData.put( data.Id, data );
 		data.UpdateDb();
 		CalcBudget();
+	}
+	
+	public double CalcBudgetRemain( BudgetData budget ) {
+	// select sum(AMOUNT) from EXPENSE where EXPENSE_CATEGORY_ID=budget.Category
+		Cursor cursor = db.rawQuery("select sum(AMOUNT) from EXPENSE where EXPENSE_CATEGORY_ID=?",
+							new String[] {String.valueOf(budget.Category)} );
+		if( cursor.moveToNext() ) {
+			double totalExpense = cursor.getDouble(0);
+			return (budget.Balance - cursor.getDouble(0));
+		} else {
+			Log.w("CommonData", "get expense error");
+			return 0;
+		}
 	}
 	
 	public void LoadShops() {

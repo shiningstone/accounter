@@ -10,8 +10,8 @@ public class BudgetData extends DbData {
 	
 	public BudgetData(int id, String name,int category, double balance)	{
 		Id = id;
-		Category = category;
 		Name = name;
+		Category = category;
 		Balance = balance;
 	}
 	

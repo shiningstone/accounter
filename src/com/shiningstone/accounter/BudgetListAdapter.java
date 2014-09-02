@@ -43,12 +43,13 @@ public class BudgetListAdapter extends BaseAdapter {
 		BudgetData budget = (BudgetData)mBudgetList.get(position);
 		convertView = mInflater.inflate(R.layout.budget_list_item, null);
 
-		((ImageView)convertView.findViewById(R.id.category_icon_iv)).setBackgroundResource(budget.Category);
+		((ImageView)convertView.findViewById(R.id.category_icon_iv)).setBackgroundResource(BUDGET_ICONS[budget.Category]);
 		((TextView)convertView.findViewById(R.id.category_name_tv)).setText(budget.Name);
 
 		String cost = String.format("$%.2f", budget.Balance);
+		String remain = String.format("$%.2f", commondata.CalcBudgetRemain(budget) );
 		((TextView)convertView.findViewById(R.id.budget_amount_tv)).setText(cost);
-		((TextView)convertView.findViewById(R.id.balance_amount_tv)).setText(mEmployer.getString(R.string.balance_amount_title) + cost);
+		((TextView)convertView.findViewById(R.id.balance_amount_tv)).setText(mEmployer.getString(R.string.balance_amount_title) + remain);
 		
 		if(budget.Balance != 0){
 			((ImageView)convertView.findViewById(R.id.line_bar_left)).setBackgroundResource(BUDGET_BAR[3]);
@@ -65,6 +66,20 @@ public class BudgetListAdapter extends BaseAdapter {
 		return convertView;
 	}
 
+	private int[] BUDGET_ICONS = {
+		R.drawable.icon_qtzx,
+		R.drawable.icon_jrbx,
+		R.drawable.icon_ylbj,
+		R.drawable.icon_rqwl,
+		R.drawable.icon_xxjx,
+		R.drawable.icon_xxyl,
+		R.drawable.icon_jltx,
+		R.drawable.icon_xcjt,
+		R.drawable.icon_jjwy,
+		R.drawable.icon_spjs,
+		R.drawable.icon_yfsp
+	};
+	
 	private final int[] BUDGET_BAR = {
 		R.drawable.widget_progress_bg_left,
 		R.drawable.widget_progress_bg_middle,

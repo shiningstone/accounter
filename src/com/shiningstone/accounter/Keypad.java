@@ -20,7 +20,12 @@ public class Keypad extends Activity implements OnClickListener {
 
 		if(this.getIntent().hasExtra("value")) {
 			value = this.getIntent().getStringExtra("value");
-			isValueEmpty = false;
+			if ( value.equals("0.0") ) {
+				value = "0";
+				isValueEmpty = true;
+			} else {
+				isValueEmpty = false;
+			}
 		}
 		
 		BtnCtrl[SHOW].setText(value);
