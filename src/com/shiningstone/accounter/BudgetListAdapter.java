@@ -43,7 +43,7 @@ public class BudgetListAdapter extends BaseAdapter {
 		BudgetData budget = (BudgetData)mBudgetList.get(position);
 		convertView = mInflater.inflate(R.layout.budget_list_item, null);
 
-		((ImageView)convertView.findViewById(R.id.category_icon_iv)).setBackgroundResource(BUDGET_ICONS[budget.Category]);
+		((ImageView)convertView.findViewById(R.id.category_icon_iv)).setBackgroundResource(BUDGET_ICONS[budget.Category-1]);
 		((TextView)convertView.findViewById(R.id.category_name_tv)).setText(budget.Name);
 
 		String cost = String.format("$%.2f", budget.Balance);

@@ -72,12 +72,12 @@ public class MainActivity extends Activity implements OnClickListener {
 	
 		double expense  = db.GetSum("EXPENSE","AMOUNT",null,null);
 		double income   = db.GetSum("INCOME","AMOUNT",null,null);
-		double banlance = db.GetSum("EXPENSE_CATEGORY","BUDGET",null,null);
+		double remain   = CommonData.getInstance().CalcBudgetTotalRemain();
 		
 		TextShow( R.id.month_tv, mDate.mMonth );
 		TextShow( R.id.income_amount_tv, "¥ " + income );
 		TextShow( R.id.expense_amount_tv, "¥ " + expense );
-		TextShow( R.id.budget_balance_amount_tv, "¥ " + banlance );
+		TextShow( R.id.budget_balance_amount_tv, "¥ " + remain );
 	}
 
 	private void DaySummaryShow() {

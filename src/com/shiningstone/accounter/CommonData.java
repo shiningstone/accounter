@@ -3,6 +3,7 @@ package com.shiningstone.accounter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 
 import com.shiningstone.accounter.db.MyDbHelper;
 import android.content.Context;
@@ -305,6 +306,17 @@ public class CommonData {
 		mBudgetData.put( data.Id, data );
 		data.UpdateDb();
 		CalcBudget();
+	}
+
+	public double CalcBudgetTotalRemain() {
+		double sum = 0;
+		
+		Iterator<BudgetData> iterator = mBudgetData.values().iterator();
+		while (iterator.hasNext()){
+			sum += CalcBudgetRemain(iterator.next());
+		}
+
+		return sum;
 	}
 	
 	public double CalcBudgetRemain( BudgetData budget ) {
